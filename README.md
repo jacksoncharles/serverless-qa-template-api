@@ -1,6 +1,8 @@
 # Restful Lambda API - post-service
 
-An [AWS Lambda](https://aws.amazon.com/lambda/) solution written using the [Serverless Toolkit](http://serverless.com) and [DynamoDB](https://aws.amazon.com/dynamodb). It includes pagination, key/value searches plus a collection of common needs including but not limited too, order/by and limit clauses.
+An [AWS Lambda](https://aws.amazon.com/lambda/) solution written using the [Serverless Toolkit](http://serverless.com) with a [DynamoDB](https://aws.amazon.com/dynamodb) backend.
+
+The service includes pagination, key/value searches plus a collection of common needs including but not limited too, order/by and limit clauses.
 
 ## EndPoints
 
