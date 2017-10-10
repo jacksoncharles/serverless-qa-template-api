@@ -8,7 +8,7 @@ The service includes pagination, key/value searches plus a collection of common 
 
 NOTE: To deploy from your desktop you must have an existing AWS account and command line access.
 
-Firstly, ensure you have installed the [Serverless Toolkit](http://serverless.com)
+Firstly, ensure you have installed the [Serverless Toolkit](http://serverless.com).
 
     npm install serverless -g
 
