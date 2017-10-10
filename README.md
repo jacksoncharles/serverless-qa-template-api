@@ -7,12 +7,12 @@ The service includes pagination, key/value searches plus a collection of common 
 ## Installation & Deployment 
 Firstly, ensure you have installed the [Serverless Toolkit](http://serverless.com)
 
-    ```npm install serverless -g```
+    npm install serverless -g
 
 Then from the project root folder simply enter
 
-    ```sls deploy```
-    
+    sls deploy
+
 ## EndPoints
 
 NAME | URL | VERB | DESCRIPTION
