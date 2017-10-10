@@ -83,6 +83,22 @@ functions:
           method: put
           cors: true
 
+  get:
+    handler: api/get.get
+    events:
+      - http:
+          path: posts/{id}
+          method: get
+          cors: true
+
+  delete:
+    handler: api/delete.delete
+    events:
+      - http:
+          path: posts/{id}
+          method: delete
+          cors: true
+
 # you can define service wide environment variables here
 #  environment:
 #    variable1: value1
