@@ -58,18 +58,15 @@ module.exports.create = (event, context, callback) => {
     };
 
     // Validate the submitted data
-    /*
     if (
         typeof title !== 'string' || 
         typeof body !== 'string' || 
-        typeof user_id !== 'number' || 
-        typeof parent_id !== 'number'
+        typeof user_id !== 'number'
     ) {
         console.error('Validation Failed');
         callback(new Error('Couldn\'t submit post because of validation errors.'));
         return;
     }
-    */
    
     // Submit the post and respond accordingly
     submitPost(formatPost(requestBody))
@@ -93,4 +90,3 @@ module.exports.create = (event, context, callback) => {
     });
 
 };
-

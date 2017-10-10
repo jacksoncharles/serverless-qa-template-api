@@ -44,14 +44,17 @@ provider:
   iamRoleStatements:
     - Effect: Allow
       Action:
+        - dynamodb:DescribeTable
         - dynamodb:Query
         - dynamodb:Scan
         - dynamodb:GetItem
         - dynamodb:PutItem
+        - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource: "*"
       
 functions:
+
   create:
     handler: api/create.create
     memorySize: 128
@@ -61,6 +64,7 @@ functions:
           path: posts
           method: post
           cors: true
+
   list:
     handler: api/list.list
     memorySize: 128
@@ -69,6 +73,14 @@ functions:
       - http:
           path: posts
           method: get
+          cors: true
+
+  update:
+    handler: api/update.update
+    events:
+      - http:
+          path: posts/{id}
+          method: put
           cors: true
 
 # you can define service wide environment variables here
