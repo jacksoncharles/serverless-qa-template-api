@@ -11,7 +11,7 @@
 #
 # Happy Coding!
 
-service: post-api
+service: forum-service
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
@@ -40,7 +40,9 @@ provider:
 #            - "Ref" : "ServerlessDeploymentBucket"
 #            - "/*"
   environment:
-    DYNAMODB_TABLE: posts
+    DYNAMODB_FORUM_TABLE: Forum
+    DYNAMODB_REPLY_TABLE: Reply
+    DYNAMODB_THREAD_TABLE: Thread
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -162,33 +164,77 @@ functions:
 
 resources:
   Resources:
-    PostsDynamoDbTable:
+    ForumDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
       DeletionPolicy: Retain
       Properties:
         AttributeDefinitions:
           -
-            AttributeName: "id"
-            AttributeType: "S"
-          -
-            AttributeName: "updatedAt"
-            AttributeType: "N"
-          -
-            AttributeName: "dummyHashKey"
+            AttributeName: "Name"
             AttributeType: "S"
         KeySchema:
           -
-            AttributeName: "id"
+            AttributeName: "Name"
             KeyType: "HASH"
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        StreamSpecification:
+          StreamViewType: "NEW_AND_OLD_IMAGES"
+        TableName: ${DYNAMODB_FORUM_TABLE}
+    ThreadDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      DependsOn: ${DYNAMODB_FORUM_TABLE}
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: "ForumName"
+            AttributeType: "S"
+          -
+            AttributeName: "Subject"
+            AttributeType: "S"
+        KeySchema:
+          -
+            AttributeName: "ForumName"
+            KeyType: "HASH"
+          -
+            AttributeName: "Subject"
+            KeyType: "RANGE"
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        StreamSpecification:
+          StreamViewType: "NEW_AND_OLD_IMAGES"
+        TableName: ${self:provider.environment.DYNAMODB_THREAD_TABLE}        
+    ReplyDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      DependsOn: ${DYNAMODB_THREAD_TABLE}      
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: "Id"
+            AttributeType: "S"
+          -
+            AttributeName: "ReplyDateTime"
+            AttributeType: "S"
+        KeySchema:
+          -
+            AttributeName: "Id"
+            KeyType: "HASH"
+          -
+            AttributeName: "ReplyDateTime"
+            KeyType: "RANGE"
         GlobalSecondaryIndexes:
           -
-            IndexName: UpdatedAtIndex
+            IndexName: PostedBy-Message-Index
             KeySchema:
               -
-                AttributeName: "dummyHashKey"
+                AttributeName: "PostedBy"
                 KeyType: HASH
               -
-                AttributeName: "updatedAt"
+                AttributeName: "Message"
                 KeyType: RANGE
             Projection:
               ProjectionType: KEYS_ONLY
@@ -200,4 +246,4 @@ resources:
           WriteCapacityUnits: 1
         StreamSpecification:
           StreamViewType: "NEW_AND_OLD_IMAGES"
-        TableName: ${self:provider.environment.DYNAMODB_TABLE}
+        TableName: ${self:provider.environment.DYNAMODB_REPLY_TABLE}
