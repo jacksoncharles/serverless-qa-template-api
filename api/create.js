@@ -12,11 +12,11 @@ module.exports.create = (event, context, callback) => {
     const requestBody = JSON.parse(event.body); // User submitted data
 
     // Grab the individual elements of the post.
+    const userId = requestBody.userId;
+    const parentId = requestBody.parentId;
+    const correctAnswer = requestBody.correctAnswer;
     const title = requestBody.title;
     const body = requestBody.body;
-    const user_id = requestBody.user_id;
-    const parent_id = requestBody.parent_id;
-
 
     /**
      * Save the post to permanent storage
@@ -29,7 +29,7 @@ module.exports.create = (event, context, callback) => {
         console.log('Submitting post');
 
         const postDetail = {
-            TableName: process.env.POST_TABLE,
+            TableName: process.env.DYNAMODB_TABLE,
             Item: post,
         };
 
@@ -48,12 +48,14 @@ module.exports.create = (event, context, callback) => {
         const timestamp = new Date().getTime();
         return {
             id: uuid.v1(),
-            user_id: data.user_id,
-            parent_id: data.parent_id,
+            userId: data.userId,
+            parentId: data.parentId,
+            correctAnswer: data.correctAnswer,
             title: data.title,
             body: data.body,
             createdAt: timestamp,
-            updatedAt: timestamp
+            updatedAt: timestamp,
+            dummyHashKey: 'OK'
         };
     };
 
@@ -61,7 +63,7 @@ module.exports.create = (event, context, callback) => {
     if (
         typeof title !== 'string' || 
         typeof body !== 'string' || 
-        typeof user_id !== 'number'
+        typeof userId !== 'number'
     ) {
         console.error('Validation Failed');
         callback(new Error('Couldn\'t submit post because of validation errors.'));

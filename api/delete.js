@@ -7,7 +7,7 @@ const dynamoDb = new AWS.DynamoDB.DocumentClient();
 module.exports.delete = (event, context, callback) => {
   
   const params = {
-    TableName: process.env.POST_TABLE,
+    TableName: process.env.DYNAMODB_TABLE,
     Key: {
       id: event.pathParameters.id,
     },

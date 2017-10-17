@@ -40,7 +40,7 @@ provider:
 #            - "Ref" : "ServerlessDeploymentBucket"
 #            - "/*"
   environment:
-    POST_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+    DYNAMODB_TABLE: posts
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -169,14 +169,35 @@ resources:
         AttributeDefinitions:
           -
             AttributeName: "id"
-            AttributeType: "S"   
+            AttributeType: "S"
+          -
+            AttributeName: "updatedAt"
+            AttributeType: "N"
+          -
+            AttributeName: "dummyHashKey"
+            AttributeType: "S"
         KeySchema:
           -
             AttributeName: "id"
             KeyType: "HASH"
+        GlobalSecondaryIndexes:
+          -
+            IndexName: UpdatedAtIndex
+            KeySchema:
+              -
+                AttributeName: "dummyHashKey"
+                KeyType: HASH
+              -
+                AttributeName: "updatedAt"
+                KeyType: RANGE
+            Projection:
+              ProjectionType: KEYS_ONLY
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         StreamSpecification:
           StreamViewType: "NEW_AND_OLD_IMAGES"
-        TableName: ${self:provider.environment.POST_TABLE}
+        TableName: ${self:provider.environment.DYNAMODB_TABLE}

@@ -26,16 +26,16 @@ module.exports.update = (event, context, callback) => {
     }
 
     const params = {
-        TableName: process.env.POST_TABLE,
+        TableName: process.env.DYNAMODB_TABLE,
         Key: {
             id: event.pathParameters.id,
         },
         ExpressionAttributeValues: {
             ':title': data.title,
             ':body': data.body,
-            ':updatedAt': timestamp,
+            ':updated_at': timestamp,
         },
-        UpdateExpression: 'SET title = :title, body = :body, updatedAt = :updatedAt',
+        UpdateExpression: 'SET title = :title, body = :body, updated_at = :updated_at',
         ReturnValues: 'ALL_NEW',
     };
 
