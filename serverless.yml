@@ -181,11 +181,10 @@ resources:
           WriteCapacityUnits: 1
         StreamSpecification:
           StreamViewType: "NEW_AND_OLD_IMAGES"
-        TableName: ${DYNAMODB_FORUM_TABLE}
+        TableName: Forum
     ThreadDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
       DeletionPolicy: Retain
-      DependsOn: ${DYNAMODB_FORUM_TABLE}
       Properties:
         AttributeDefinitions:
           -
@@ -206,11 +205,10 @@ resources:
           WriteCapacityUnits: 1
         StreamSpecification:
           StreamViewType: "NEW_AND_OLD_IMAGES"
-        TableName: ${self:provider.environment.DYNAMODB_THREAD_TABLE}        
+        TableName: Thread
     ReplyDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
       DeletionPolicy: Retain
-      DependsOn: ${DYNAMODB_THREAD_TABLE}      
       Properties:
         AttributeDefinitions:
           -
@@ -218,6 +216,12 @@ resources:
             AttributeType: "S"
           -
             AttributeName: "ReplyDateTime"
+            AttributeType: "S"
+          -
+            AttributeName: "PostedBy"
+            AttributeType: "S"
+          -
+            AttributeName: "Message"
             AttributeType: "S"
         KeySchema:
           -
@@ -246,4 +250,4 @@ resources:
           WriteCapacityUnits: 1
         StreamSpecification:
           StreamViewType: "NEW_AND_OLD_IMAGES"
-        TableName: ${self:provider.environment.DYNAMODB_REPLY_TABLE}
+        TableName: Reply
