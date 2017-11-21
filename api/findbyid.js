@@ -19,7 +19,7 @@ var params = {
 
 module.exports.findbyid = (event, context, callback) => {
 
-     const params = {
+     let params = {
           TableName: process.env.DYNAMODB_REPLY_TABLE,
           KeyConditionExpression: "Id = :searchstring",
           ExpressionAttributeValues: {
@@ -27,6 +27,25 @@ module.exports.findbyid = (event, context, callback) => {
           }
      }
 
+
+
+     if ( event.queryStringParameters ) {
+
+          if ( event.queryStringParameters.hasOwnProperty('limit') ) {
+
+               params['Limit'] = event.queryStringParameters.limit;
+          }
+
+          // Pagination
+          if ( event.queryStringParameters.hasOwnProperty('id') && event.queryStringParameters.hasOwnProperty('replydatetime') ) {
+
+               params['ExclusiveStartKey'] = {
+                    Id: event.queryStringParameters.id,
+                    ReplyDateTime: event.queryStringParameters.replydatetime                    
+               }
+          }
+     }
+     
      // Do we have any parameters?
      /*
      if( event.queryStringParameters !== null && typeof event.queryStringParameters === 'object' ) {
@@ -40,6 +59,8 @@ module.exports.findbyid = (event, context, callback) => {
     
 
      dynamoDb.query(params, function(error, data) {
+
+          console.log( '=== data ===', data );
 
           // Handle potential errors
           if (error) {
