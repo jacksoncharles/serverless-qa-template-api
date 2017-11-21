@@ -27,8 +27,6 @@ module.exports.findbyid = (event, context, callback) => {
           }
      }
 
-
-
      if ( event.queryStringParameters ) {
 
           if ( event.queryStringParameters.hasOwnProperty('limit') ) {
