@@ -2,12 +2,24 @@
 
 const uuid = require('uuid');
 const AWS = require('aws-sdk'); 
-
 AWS.config.setPromisesDependency(require('bluebird'));
-
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
-module.exports.create = (event, context, callback) => {
+var Reply = function() {
+
+     /**
+      * Mandatory parameters for the query. The value of "Item" will be populated with 
+      * use passed parameters
+      * 
+      * @type Object
+      */
+     var parameters = {
+          TableName: process.env.DYNAMODB_REPLY_TABLE,
+          Item: {}
+     }
+}
+
+Reply.prototype.hydrate = function( event ) {
 
     const requestBody = JSON.parse(event.body); // User submitted data
 
@@ -17,6 +29,12 @@ module.exports.create = (event, context, callback) => {
     const correctAnswer = requestBody.correctAnswer;
     const title = requestBody.title;
     const body = requestBody.body;
+
+    return this;
+}
+
+module.exports.create = (event, context, callback) => {
+
 
     /**
      * Save the post to permanent storage

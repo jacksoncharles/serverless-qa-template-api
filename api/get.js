@@ -1,20 +1,31 @@
 'use strict';
 
 const AWS = require('aws-sdk'); // eslint-disable-line import/no-extraneous-dependencies
-
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
+
+var Reply = function() {
+
+    /**
+      * Mandatory parameters for the query.
+      * 
+      * @type Object
+      */
+    var parameters = {
+
+        TableName: process.env.DYNAMODB_REPLY_TABLE,
+        Key: {
+            Id: event.pathParameters.id,
+            ReplyDateTime: event.pathParameters.replydatetime,
+        }
+    }
+}
 
 module.exports.get = (event, context, callback) => {
 
-    const params = {
-        TableName: process.env.DYNAMODB_TABLE,
-        Key: {
-            id: event.pathParameters.id
-        }
-    };
+    var Query = new Reply();
 
     // fetch post from the database
-    dynamoDb.get(params, (error, result) => {
+    dynamoDb.get(Query.parameters, (error, result) => {
         
         // handle potential errors
         if (error) {
