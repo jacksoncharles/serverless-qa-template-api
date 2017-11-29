@@ -1,4 +1,4 @@
-# Implementation of the AWS DynamoDb example forum using the Serverless framework - aws-dynamodb-serverless-example-forum
+# AWS DynamoDb Example Forum
 
 An [AWS Lambda](https://aws.amazon.com/lambda/) solution written using the [Serverless Toolkit](http://serverless.com) with a [DynamoDB](https://aws.amazon.com/dynamodb) backend.
 
@@ -28,4 +28,4 @@ EDIT | /replies/:id | PATCH | Update details of a post by providing only those e
 DELETE | /replies/:id | DELETE | Remove an item from permanent storage
 
 ## Issues
-Please report any bugs on the [Issue Tracker](https://github.com/jacksoncharles/aws-dynamodb-serverless-example-forum/issues).
+Please report any bugs on the [Issue Tracker](https://github.com/jacksoncharles/dynamodb-example-forum/issues).
