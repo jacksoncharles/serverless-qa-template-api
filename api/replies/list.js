@@ -3,100 +3,133 @@
 const AWS = require('aws-sdk'); // eslint-disable-line import/no-extraneous-dependencies
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
-var Reply = function() {
-
-     /**
-      * Mandatory parameters for the query.
-      * 
-      * @type Object
-      */
-     var parameters = {
-          Key: 
-          TableName: process.env.DYNAMODB_REPLY_TABLE,
-          KeyConditionExpression: "Id = :searchstring",
-          ExpressionAttributeValues: {
-               ":searchstring" : event.pathParameters.id
-          }
-     }
-}
-
-
 /**
- * If there are any pagination parameters set them here by updating the value of
- * parameters object property
+ * Handler for the lambda function.
  * 
- * @return this
- */
-Reply.prototype.setPagination = function( event ) {
-
-     if ( event.queryStringParameters ) {
-
-          // Pagination
-          if ( event.queryStringParameters.hasOwnProperty('id') && event.queryStringParameters.hasOwnProperty('replydatetime') ) {
-
-               this.parameters['ExclusiveStartKey'] = {
-                    Id: event.queryStringParameters.id,
-                    ReplyDateTime: event.queryStringParameters.replydatetime                    
-               }
-          }
-     }
-
-     return this;
-}
-
-/**
- * Override the default value of "Limit" with any value passed by the query string.
- *
- * @return void
- */
-Reply.prototype.setLimit = function( event ) {
-
-     if ( event.queryStringParameters ) {
-
-          if ( event.queryStringParameters.hasOwnProperty('limit') ) {
-
-               params['Limit'] = event.queryStringParameters.limit;
-          }
-     }
-
-     return this;
-}
-
-/**
- * Code starts to execute here using previously defined functions chained together.
- * 
- * @param  Object        event          AWS Lambda uses this parameter to pass in event data to the handler.
- * @param  Object        context        AWS Lambda uses this parameter to provide your handler the runtime information of the Lambda function that is executing. 
- * @param  Function      callback       Optional parameter used to pass a callback
+ * @param  {Object}        event -          AWS Lambda uses this parameter to pass in event data to the handler.
+ * @param  {Object}        context -        AWS Lambda uses this parameter to provide your handler the runtime information of the Lambda function that is executing. 
+ * @param  {Function}      callback -      Optional parameter used to pass a callback
  * 
  * @return JSON    JSON encoded response.
  */
 module.exports.list = (event, context, callback) => {
 
-     var Query = new Reply()
-     .setPagination()
-     .setLimit();
+    /**
+     * Reply object used to build a query captured in the property "parameters".
+     * 
+     * @param  {Object} event - AWS Lambda uses this parameter to pass in event data to the handler.
+     * 
+     * @constructor
+     */
+    var Reply = function( event ) {
 
-     dynamoDb.query(Query.parameters, function(error, data) {
+        /**
+         * Capture the event object passed as a parameter;
+         * 
+         * @type event
+         */
+        this.event = event;
 
-          // Handle potential errors
-          if (error) {
+        /**
+         * Used to hold the dynamodb query parameters built using values
+         * within property this.event
+         * 
+         * @todo : Change TableName to value of process.env.DYNAMODB_REPLY_TABLE
+         * 
+         * @type Object
+         */
+        this.parameters = {
+            TableName: 'Reply'
+        }
+    }
 
-               callback(null, {
-                    statusCode: error.statusCode || 501,
-                    headers: { 'Content-Type': 'text/plain' },
-                    body: 'Couldn\'t fetch the posts.',
-               });
+     /**
+      * The primary key must be set as a query parameter.
+      *
+      * @return this
+      */
+    Reply.prototype.setPrimaryKey = function() {
 
-               return;
-          }
+        this.parameters['KeyConditionExpression'] = "ThreadId = :searchstring";
+        this.parameters['ExpressionAttributeValues'] = {
+            ":searchstring" : this.event.queryStringParameters.threadid
+        };
 
-          // Create a response
-          const response = {
-               statusCode: 200,
-               body: JSON.stringify(data),
-          };
+        return this;
+    }
 
-          callback(null, response);
-     });     
+    /**
+     * If there are any pagination parameters set them here by updating the value of
+     * parameters object property
+     * 
+     * @return this
+     */
+    Reply.prototype.setPagination = function() {
+
+        if ( this.event.queryStringParameters ) {
+
+            // Pagination
+            if ( this.event.queryStringParameters.hasOwnProperty('threadid') && this.event.queryStringParameters.hasOwnProperty('datetime') ) {
+
+                this.parameters['ExclusiveStartKey'] = {
+                    ThreadId: this.event.queryStringParameters.threadid,
+                    DateTime: this.event.queryStringParameters.datetime
+                }
+            }
+        }
+
+        return this;
+    }
+
+    /**
+     * Override the default value of "Limit" with any value passed by the query string.
+     *
+     * @return void
+     */
+    Reply.prototype.setLimit = function() {
+
+        if ( this.event.queryStringParameters ) {
+
+            if ( this.event.queryStringParameters.hasOwnProperty('limit') ) {
+
+                this.parameters['Limit'] = this.event.queryStringParameters.limit;
+            }
+        }
+
+        return this;
+    }
+
+    /**
+     * Instantiate an instance of Reply and build the parameters for the query.
+     * 
+     * @type {Reply}
+     */
+    var Query = new Reply( event )
+        .setPrimaryKey()
+        .setPagination()
+        .setLimit();
+
+    dynamoDb.query( Query.parameters, function( error, data ) {
+
+        // Handle potential errors
+        if (error) {
+
+            console.log('=== error ===', error );
+            callback(null, {
+                statusCode: error.statusCode || 501,
+                headers: { 'Content-Type': 'text/plain' },
+                body: 'Couldn\'t fetch the posts.',
+            });
+
+            return;
+        }
+
+        // Create a response
+        const response = {
+            statusCode: 200,
+            body: JSON.stringify(data),
+        };
+
+        callback(null, response);
+    });
 };

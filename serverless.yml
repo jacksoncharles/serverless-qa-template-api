@@ -40,7 +40,6 @@ provider:
 #            - "Ref" : "ServerlessDeploymentBucket"
 #            - "/*"
   environment:
-    DYNAMODB_FORUM_TABLE: Forum
     DYNAMODB_REPLY_TABLE: Reply
     DYNAMODB_THREAD_TABLE: Thread
   iamRoleStatements:
@@ -58,46 +57,46 @@ provider:
 functions:
 
   create:
-    handler: api/create.create
+    handler: api/replies/create.create
     memorySize: 128
     description: Submit post information.
     events:
       - http: 
-          path: posts
+          path: replies
           method: post
           cors: true
 
   list:
-    handler: api/list.list
+    handler: api/replies/list.list
     memorySize: 128
     description: Retrieve a paginated list of replies by the value of Id
+    events:
+      - http:
+          path: replies
+          method: get
+          cors: true
+
+  update:
+    handler: api/replies/update.update
+    events:
+      - http:
+          path: replies/{id}
+          method: put
+          cors: true
+
+  get:
+    handler: api/replies/get.get
     events:
       - http:
           path: replies/{id}
           method: get
           cors: true
 
-  update:
-    handler: api/update.update
-    events:
-      - http:
-          path: posts/{id}
-          method: put
-          cors: true
-
-  get:
-    handler: api/get.get
-    events:
-      - http:
-          path: posts/{id}
-          method: get
-          cors: true
-
   delete:
-    handler: api/delete.delete
+    handler: api/replies/delete.delete
     events:
       - http:
-          path: posts/{id}
+          path: replies/{id}
           method: delete
           cors: true
 
@@ -164,42 +163,45 @@ functions:
 
 resources:
   Resources:
-    ForumDynamoDbTable:
-      Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Retain
-      Properties:
-        AttributeDefinitions:
-          -
-            AttributeName: "Name"
-            AttributeType: "S"
-        KeySchema:
-          -
-            AttributeName: "Name"
-            KeyType: "HASH"
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        StreamSpecification:
-          StreamViewType: "NEW_AND_OLD_IMAGES"
-        TableName: Forum
     ThreadDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
       DeletionPolicy: Retain
       Properties:
         AttributeDefinitions:
           -
-            AttributeName: "ForumName"
+            AttributeName: "Id"
             AttributeType: "S"
           -
-            AttributeName: "Subject"
+            AttributeName: "UserId"
+            AttributeType: "S"
+          -
+            AttributeName: "Message"
+            AttributeType: "S"
+          -
+            AttributeName: "DateTime"
             AttributeType: "S"
         KeySchema:
           -
-            AttributeName: "ForumName"
+            AttributeName: "Id"
             KeyType: "HASH"
           -
-            AttributeName: "Subject"
+            AttributeName: "DateTime"
             KeyType: "RANGE"
+        GlobalSecondaryIndexes:
+          -
+            IndexName: Thread-UserId-Message-Index
+            KeySchema:
+              -
+                AttributeName: "UserId"
+                KeyType: HASH
+              -
+                AttributeName: "Message"
+                KeyType: RANGE
+            Projection:
+              ProjectionType: KEYS_ONLY
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
@@ -212,30 +214,30 @@ resources:
       Properties:
         AttributeDefinitions:
           -
-            AttributeName: "Id"
+            AttributeName: "ThreadId"
             AttributeType: "S"
           -
-            AttributeName: "ReplyDateTime"
-            AttributeType: "S"
-          -
-            AttributeName: "PostedBy"
+            AttributeName: "UserId"
             AttributeType: "S"
           -
             AttributeName: "Message"
             AttributeType: "S"
+          -
+            AttributeName: "DateTime"
+            AttributeType: "S"
         KeySchema:
           -
-            AttributeName: "Id"
+            AttributeName: "ThreadId"
             KeyType: "HASH"
           -
-            AttributeName: "ReplyDateTime"
+            AttributeName: "DateTime"
             KeyType: "RANGE"
         GlobalSecondaryIndexes:
           -
-            IndexName: PostedBy-Message-Index
+            IndexName: Reply-UserId-Message-Index
             KeySchema:
               -
-                AttributeName: "PostedBy"
+                AttributeName: "UserId"
                 KeyType: HASH
               -
                 AttributeName: "Message"
