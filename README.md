@@ -1,4 +1,4 @@
-# Restful Lambda API - post-service
+# Implementation of the AWS DynamoDb example forum using the Serverless framework - aws-dynamodb-serverless-example-forum
 
 An [AWS Lambda](https://aws.amazon.com/lambda/) solution written using the [Serverless Toolkit](http://serverless.com) with a [DynamoDB](https://aws.amazon.com/dynamodb) backend.
 
@@ -20,12 +20,12 @@ Then, from the project root folder simply enter the following command to provisi
 
 NAME | URL | VERB | DESCRIPTION
 ---- | --- | ---- | -----------
-CREATE | /posts | POST | Create a new item in permanent storage
-LIST | /posts | GET | Retrieve a paginated listing from permanent storage
-GET | /posts/:id | GET | Retrieve a individual item using the id passed as a route parameter
-UPDATE | /posts/:id | PUT | Update details of a post by providing a full array of model data
-EDIT | /posts/:id | PATCH | Update details of a post by providing only those elements you wish to update
-DELETE | /posts/:id | DELETE | Remove an item from permanent storage
+CREATE | /replies | POST | Create a new item in permanent storage
+LIST | /replies | GET | Retrieve a paginated listing from permanent storage
+GET | /replies/:id | GET | Retrieve a individual item using the id passed as a route parameter
+UPDATE | /replies/:id | PUT | Update details of a post by providing a full array of model data
+EDIT | /replies/:id | PATCH | Update details of a post by providing only those elements you wish to update
+DELETE | /replies/:id | DELETE | Remove an item from permanent storage
 
 ## Issues
-Please report any bugs on the [Issue Tracker](https://github.com/jacksoncharles/post-service/issues).
+Please report any bugs on the [Issue Tracker](https://github.com/jacksoncharles/aws-dynamodb-serverless-example-forum/issues).
