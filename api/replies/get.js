@@ -20,7 +20,7 @@ var Reply = function() {
     }
 }
 
-module.exports.get = (event, context, callback) => {
+module.exports.replyGet = (event, context, callback) => {
 
     var Query = new Reply();
 

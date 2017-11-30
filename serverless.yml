@@ -67,7 +67,7 @@ functions:
           cors: true
 
   replyList:
-    handler: api/replies/list.list
+    handler: api/replies/replyList.replyList
     memorySize: 128
     description: Retrieve a paginated list of replies by the value of Id
     events:
@@ -178,14 +178,14 @@ resources:
             AttributeName: "Message"
             AttributeType: "S"
           -
-            AttributeName: "DateTime"
+            AttributeName: "ThreadDateTime"
             AttributeType: "S"
         KeySchema:
           -
             AttributeName: "Id"
             KeyType: "HASH"
           -
-            AttributeName: "DateTime"
+            AttributeName: "ThreadDateTime"
             KeyType: "RANGE"
         GlobalSecondaryIndexes:
           -
@@ -223,44 +223,43 @@ resources:
             AttributeName: "UserId"
             AttributeType: "S"
           -
-            AttributeName: "Message"
-            AttributeType: "S"
-          -
-            AttributeName: "DateTime"
+            AttributeName: "ReplyDateTime"
             AttributeType: "S"
         KeySchema:
           -
             AttributeName: "Id"
             KeyType: "HASH"
           -
-            AttributeName: "DateTime"
+            AttributeName: "ReplyDateTime"
             KeyType: "RANGE"
         GlobalSecondaryIndexes:
           -
-            IndexName: Thread-Index
+            IndexName: ThreadIndex
             KeySchema:
               -
                 AttributeName: "ThreadId"
                 KeyType: HASH
               -
-                AttributeName: "DateTime"
+                AttributeName: "ReplyDateTime"
                 KeyType: RANGE
             Projection:
-              ProjectionType: KEYS_ONLY
+              ProjectionType: INCLUDE
+              NonKeyAttributes: "Message, UserName"
             ProvisionedThroughput:
               ReadCapacityUnits: 1
               WriteCapacityUnits: 1
           -
-            IndexName: User-Index
+            IndexName: UserIndex
             KeySchema:
               -
                 AttributeName: "UserId"
                 KeyType: HASH
               -
-                AttributeName: "DateTime"
+                AttributeName: "ReplyDateTime"
                 KeyType: RANGE
             Projection:
-              ProjectionType: KEYS_ONLY
+              ProjectionType: INCLUDE
+              NonKeyAttributes: "Message, UserName"
             ProvisionedThroughput:
               ReadCapacityUnits: 1
               WriteCapacityUnits: 1

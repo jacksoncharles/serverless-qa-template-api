@@ -3,6 +3,9 @@
         {
             "PutRequest": {
                 "Item": {
+                    "Id": {
+                        "S": "1"
+                    },
                     "ThreadId": {
                         "S": "1"
                     },
@@ -12,14 +15,11 @@
                     "Message": {
                         "S": "Mauris sed vestibulum nibh, non viverra lacus. Vestibulum non lacus massa. Vivamus sodales nibh vel cursus dignissim. Maecenas tempus, ligula id pulvinar semper, neque nunc suscipit ex, a scelerisque justo sapien sit amet magna. Praesent ut dictum purus, vitae sollicitudin sapien. Nunc pretium eros eu nulla hendrerit molestie. Duis nisl nibh, auctor at finibus ac, aliquam nec tellus. Suspendisse sed fringilla ex, id ultrices diam. Vestibulum nulla orci, rhoncus ac efficitur semper, pretium sed nisl. Ut in lectus in augue malesuada laoreet eu sed ante. Etiam ac mattis dolor, sed varius tellus."
                     },
-                    "DateTime": {
+                    "ReplyDateTime": {
                         "S": "2015-09-15T19:58:22.947Z"
                     },
                     "UserName": {
                         "S": "primordial"
-                    },
-                    "UserAvatarLink": {
-                        "S": "http://via.placeholder.com/350x150"
                     }
                 }
             }
@@ -27,8 +27,11 @@
         {
             "PutRequest": {
                 "Item": {
+                    "Id": {
+                        "S": "2"
+                    },                    
                     "ThreadId": {
-                        "S": "1"
+                        "S": "2"
                     },
                     "UserId": {
                         "S": "2"
@@ -36,14 +39,11 @@
                     "Message": {
                         "S": "Donec volutpat, arcu vel egestas luctus, urna turpis bibendum lorem, quis vulputate leo justo vitae leo. Donec hendrerit dapibus turpis, et posuere mi rhoncus eu. Donec sit amet enim bibendum, convallis metus in, interdum sapien. Duis malesuada eu leo quis dictum. Duis auctor neque eros, sit amet venenatis lacus rhoncus vitae. Nam hendrerit nibh eget neque gravida, sit amet lobortis sem aliquet. Maecenas vitae nisi aliquam, venenatis nunc a, dictum lorem."
                     },
-                    "DateTime": {
+                    "ReplyDateTime": {
                         "S": "2015-08-15T19:58:22.947Z"
                     },
                     "UserName": {
                         "S": "primordial"
-                    },
-                    "UserAvatarLink": {
-                        "S": "http://via.placeholder.com/350x150"
                     }
                 }
             }
@@ -51,8 +51,11 @@
         {
             "PutRequest": {
                 "Item": {
+                    "Id": {
+                        "S": "3"
+                    },                    
                     "ThreadId": {
-                        "S": "1"
+                        "S": "3"
                     },
                     "UserId": {
                         "S": "1"
@@ -60,17 +63,86 @@
                     "Message": {
                         "S": "In viverra justo diam, eget imperdiet libero vestibulum quis. In malesuada leo quis semper dignissim. Nulla auctor ullamcorper turpis, vitae blandit felis aliquet non. Praesent vel volutpat felis. Curabitur euismod nibh quam, pulvinar facilisis est pulvinar vitae. In est metus, commodo non commodo quis, facilisis a leo. Integer et semper lorem. Phasellus at cursus turpis. Quisque lacinia tincidunt enim id porta. Ut tempor augue at placerat imperdiet. Nullam non nisi dapibus, volutpat sem vel, dictum felis. Proin pharetra nisi id diam vulputate, non facilisis lacus commodo."
                     },
-                    "DateTime": {
+                    "ReplyDateTime": {
                         "S": "2015-07-15T19:58:22.947Z"
                     },
                     "UserName": {
                         "S": "primordial"
-                    },
-                    "UserAvatarLink": {
-                        "S": "http://via.placeholder.com/350x150"
                     }
                 }
             }
-        }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "Id": {
+                        "S": "4"
+                    },
+                    "ThreadId": {
+                        "S": "1"
+                    },
+                    "UserId": {
+                        "S": "1"
+                    },
+                    "Message": {
+                        "S": "Mauris sed vestibulum nibh, non viverra lacus. Vestibulum non lacus massa. Vivamus sodales nibh vel cursus dignissim. Maecenas tempus, ligula id pulvinar semper, neque nunc suscipit ex, a scelerisque justo sapien sit amet magna. Praesent ut dictum purus, vitae sollicitudin sapien. Nunc pretium eros eu nulla hendrerit molestie. Duis nisl nibh, auctor at finibus ac, aliquam nec tellus. Suspendisse sed fringilla ex, id ultrices diam. Vestibulum nulla orci, rhoncus ac efficitur semper, pretium sed nisl. Ut in lectus in augue malesuada laoreet eu sed ante. Etiam ac mattis dolor, sed varius tellus."
+                    },
+                    "ReplyDateTime": {
+                        "S": "2015-09-15T19:58:22.947Z"
+                    },
+                    "UserName": {
+                        "S": "primordial"
+                    }
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "Id": {
+                        "S": "5"
+                    },                    
+                    "ThreadId": {
+                        "S": "2"
+                    },
+                    "UserId": {
+                        "S": "2"
+                    },
+                    "Message": {
+                        "S": "Donec volutpat, arcu vel egestas luctus, urna turpis bibendum lorem, quis vulputate leo justo vitae leo. Donec hendrerit dapibus turpis, et posuere mi rhoncus eu. Donec sit amet enim bibendum, convallis metus in, interdum sapien. Duis malesuada eu leo quis dictum. Duis auctor neque eros, sit amet venenatis lacus rhoncus vitae. Nam hendrerit nibh eget neque gravida, sit amet lobortis sem aliquet. Maecenas vitae nisi aliquam, venenatis nunc a, dictum lorem."
+                    },
+                    "ReplyDateTime": {
+                        "S": "2015-08-15T19:58:22.947Z"
+                    },
+                    "UserName": {
+                        "S": "primordial"
+                    }
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "Id": {
+                        "S": "6"
+                    },                    
+                    "ThreadId": {
+                        "S": "3"
+                    },
+                    "UserId": {
+                        "S": "1"
+                    },
+                    "Message": {
+                        "S": "In viverra justo diam, eget imperdiet libero vestibulum quis. In malesuada leo quis semper dignissim. Nulla auctor ullamcorper turpis, vitae blandit felis aliquet non. Praesent vel volutpat felis. Curabitur euismod nibh quam, pulvinar facilisis est pulvinar vitae. In est metus, commodo non commodo quis, facilisis a leo. Integer et semper lorem. Phasellus at cursus turpis. Quisque lacinia tincidunt enim id porta. Ut tempor augue at placerat imperdiet. Nullam non nisi dapibus, volutpat sem vel, dictum felis. Proin pharetra nisi id diam vulputate, non facilisis lacus commodo."
+                    },
+                    "ReplyDateTime": {
+                        "S": "2015-07-15T19:58:22.947Z"
+                    },
+                    "UserName": {
+                        "S": "primordial"
+                    }
+                }
+            }
+        }        
     ]
 }

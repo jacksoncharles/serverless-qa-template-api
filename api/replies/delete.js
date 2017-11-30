@@ -4,7 +4,7 @@ const AWS = require('aws-sdk'); // eslint-disable-line import/no-extraneous-depe
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
-module.exports.delete = (event, context, callback) => {
+module.exports.replyDelete = (event, context, callback) => {
   
   const params = {
     TableName: process.env.DYNAMODB_TABLE,

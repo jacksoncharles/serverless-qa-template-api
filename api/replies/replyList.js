@@ -12,7 +12,7 @@ const dynamoDb = new AWS.DynamoDB.DocumentClient();
  * 
  * @return JSON    JSON encoded response.
  */
-module.exports.list = (event, context, callback) => {
+module.exports.replyList = (event, context, callback) => {
 
     /**
      * Query object used to build this.parameters.
@@ -50,6 +50,7 @@ module.exports.list = (event, context, callback) => {
       */
     Query.prototype.setThreadIndex = function() {
 
+        console.info('inside setThreadIndex updated');
         if ( this.event.queryStringParameters && this.event.queryStringParameters.threadid ) {
 
             this.parameters['IndexName'] = "ThreadIndex";
@@ -59,6 +60,7 @@ module.exports.list = (event, context, callback) => {
             };
         }
 
+        console.log('=== this.parameters ===', this.parameters );
         return this;
     }
 

@@ -14,7 +14,7 @@ const dynamoDb = new AWS.DynamoDB.DocumentClient();
  * 
  * @return JSON    JSON encoded response.
  */
-module.exports.create = (event, context, callback) => {
+module.exports.replyCreate = (event, context, callback) => {
 
     var Reply = function( event ) {
 
@@ -37,6 +37,13 @@ module.exports.create = (event, context, callback) => {
             TableName: 'Reply'
             Item: {}
         }
+
+        /**
+         * Used to hold any validation messages.
+         * 
+         * @type {Array}
+         */
+        this.errors = [];
     }
 
     /**
@@ -46,15 +53,14 @@ module.exports.create = (event, context, callback) => {
      */
     Reply.prototype.hydrate = function() {
 
-        const requestBody = JSON.parse( this.event.body ); // User submitted data
         const timestamp = new Date().getTime();
 
         this.parameters.Item = {
             Id: uuid.v1(),
-            ThreadId: data.threadid,
-            UserId: data.userid,
-            Message: data.message,
-            UserName: data.username,
+            ThreadId: this.event.queryStringParameters.threadid,
+            UserId: this.event.queryStringParameters.userid,
+            Message: this.event.queryStringParameters.message,
+            UserName: this.event.queryStringParameters.username,
             DateTime: timestamp
         };
 
@@ -68,15 +74,14 @@ module.exports.create = (event, context, callback) => {
      */
     Reply.prototype.validates = function() {
 
-        if (
-            typeof title !== 'string' || 
-            typeof body !== 'string' || 
-            typeof userId !== 'number'
-        ) {
-            console.error('Validation Failed');
-            callback(new Error('Couldn\'t submit post because of validation errors.'));
-            return;
-        }
+        this.errors = [];
+
+        if ( this.event.queryStringParameters.hasOwnProperty('threadid') == false && typeof this.event.queryStringParameters.threadid !== 'string' ) this.errors.push('threadid missing or invalid');
+        if ( this.event.queryStringParameters.hasOwnProperty('userid') == false && typeof this.event.queryStringParameters.userid !== 'string' ) this.errors.push('userid missing or invalid');
+        if ( this.event.queryStringParameters.hasOwnProperty('message') == false && typeof this.event.queryStringParameters.message !== 'string' ) this.errors.push('message missing or invalid');
+        if ( this.event.queryStringParameters.hasOwnProperty('username') == false && typeof this.event.queryStringParameters.username !== 'string' ) this.errors.push('username missing or invalid');
+
+        return this.errors.length ? 0 : 1;
     }
 
     // Instantiate an instance of Reply and build the Item.
