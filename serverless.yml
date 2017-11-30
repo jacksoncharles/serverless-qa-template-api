@@ -56,7 +56,7 @@ provider:
       
 functions:
 
-  create:
+  replyCreate:
     handler: api/replies/create.create
     memorySize: 128
     description: Submit post information.
@@ -66,7 +66,7 @@ functions:
           method: post
           cors: true
 
-  list:
+  replyList:
     handler: api/replies/list.list
     memorySize: 128
     description: Retrieve a paginated list of replies by the value of Id
@@ -76,7 +76,7 @@ functions:
           method: get
           cors: true
 
-  update:
+  replyUpdate:
     handler: api/replies/update.update
     events:
       - http:
@@ -84,7 +84,7 @@ functions:
           method: put
           cors: true
 
-  get:
+  replyGet:
     handler: api/replies/get.get
     events:
       - http:
@@ -92,7 +92,7 @@ functions:
           method: get
           cors: true
 
-  delete:
+  replyDelete:
     handler: api/replies/delete.delete
     events:
       - http:
@@ -214,6 +214,9 @@ resources:
       Properties:
         AttributeDefinitions:
           -
+            AttributeName: "Id"
+            AttributeType: "S"
+          -
             AttributeName: "ThreadId"
             AttributeType: "S"
           -
@@ -227,20 +230,34 @@ resources:
             AttributeType: "S"
         KeySchema:
           -
-            AttributeName: "ThreadId"
+            AttributeName: "Id"
             KeyType: "HASH"
           -
             AttributeName: "DateTime"
             KeyType: "RANGE"
         GlobalSecondaryIndexes:
           -
-            IndexName: Reply-UserId-Message-Index
+            IndexName: Thread-Index
+            KeySchema:
+              -
+                AttributeName: "ThreadId"
+                KeyType: HASH
+              -
+                AttributeName: "DateTime"
+                KeyType: RANGE
+            Projection:
+              ProjectionType: KEYS_ONLY
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
+          -
+            IndexName: User-Index
             KeySchema:
               -
                 AttributeName: "UserId"
                 KeyType: HASH
               -
-                AttributeName: "Message"
+                AttributeName: "DateTime"
                 KeyType: RANGE
             Projection:
               ProjectionType: KEYS_ONLY

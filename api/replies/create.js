@@ -5,108 +5,116 @@ const AWS = require('aws-sdk');
 AWS.config.setPromisesDependency(require('bluebird'));
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
-var Reply = function() {
-
-     /**
-      * Mandatory parameters for the query. The value of "Item" will be populated with 
-      * use passed parameters
-      * 
-      * @type Object
-      */
-     var parameters = {
-          TableName: process.env.DYNAMODB_REPLY_TABLE,
-          Item: {}
-     }
-}
-
-Reply.prototype.hydrate = function( event ) {
-
-    const requestBody = JSON.parse(event.body); // User submitted data
-
-    // Grab the individual elements of the post.
-    const userId = requestBody.userId;
-    const parentId = requestBody.parentId;
-    const correctAnswer = requestBody.correctAnswer;
-    const title = requestBody.title;
-    const body = requestBody.body;
-
-    return this;
-}
-
+/**
+ * Handler for the lambda function.
+ * 
+ * @param  {Object}        event -          AWS Lambda uses this parameter to pass in event data to the handler.
+ * @param  {Object}        context -        AWS Lambda uses this parameter to provide your handler the runtime information of the Lambda function that is executing. 
+ * @param  {Function}      callback -      Optional parameter used to pass a callback
+ * 
+ * @return JSON    JSON encoded response.
+ */
 module.exports.create = (event, context, callback) => {
 
+    var Reply = function( event ) {
 
-    /**
-     * Save the post to permanent storage
-     * 
-     * @param  {object} post [New post]
-     * @return {array}      [The newly created post]
-     */
-    const submitPost = post => {
-      
-        console.log('Submitting post');
+        /**
+         * Capture the event object passed as a parameter;
+         * 
+         * @type event
+         */
+        this.event = event;
 
-        const postDetail = {
-            TableName: process.env.DYNAMODB_TABLE,
-            Item: post,
-        };
-
-        return dynamoDb.put(postDetail).promise()
-        .then(res => post);
-    };
-
-    /**
-     * Format the post ready for saving to permanent storage
-     * 
-     * @param  {Array} data  [User submitted data]
-     * @return {Object}      [Individual post formatted as an object]
-     */
-    const formatPost = (data) => {
-
-        const timestamp = new Date().getTime();
-        return {
-            id: uuid.v1(),
-            userId: data.userId,
-            parentId: data.parentId,
-            correctAnswer: data.correctAnswer,
-            title: data.title,
-            body: data.body,
-            createdAt: timestamp,
-            updatedAt: timestamp,
-            dummyHashKey: 'OK'
-        };
-    };
-
-    // Validate the submitted data
-    if (
-        typeof title !== 'string' || 
-        typeof body !== 'string' || 
-        typeof userId !== 'number'
-    ) {
-        console.error('Validation Failed');
-        callback(new Error('Couldn\'t submit post because of validation errors.'));
-        return;
+        /**
+         * Used to build the object being saved to permanent storage. The value of "Item" will 
+         * be populated with user passed parameters
+         * 
+         * @todo : Change TableName to value of process.env.DYNAMODB_REPLY_TABLE
+         * 
+         * @type Object
+         */
+        this.parameters = {
+            TableName: 'Reply'
+            Item: {}
+        }
     }
-   
-    // Submit the post and respond accordingly
-    submitPost(formatPost(requestBody))
-    .then(res => {
+
+    /**
+     * Populates the "item" object prior to saving
+     * 
+     * @return {this}
+     */
+    Reply.prototype.hydrate = function() {
+
+        const requestBody = JSON.parse( this.event.body ); // User submitted data
+        const timestamp = new Date().getTime();
+
+        this.parameters.Item = {
+            Id: uuid.v1(),
+            ThreadId: data.threadid,
+            UserId: data.userid,
+            Message: data.message,
+            UserName: data.username,
+            DateTime: timestamp
+        };
+
+        return this;
+    }
+
+    /**
+     * Validates the data passed in the event object
+     * 
+     * @return {this}
+     */
+    Reply.prototype.validates = function() {
+
+        if (
+            typeof title !== 'string' || 
+            typeof body !== 'string' || 
+            typeof userId !== 'number'
+        ) {
+            console.error('Validation Failed');
+            callback(new Error('Couldn\'t submit post because of validation errors.'));
+            return;
+        }
+    }
+
+    // Instantiate an instance of Reply and build the Item.
+    var Item = new Reply( event );
+
+    if ( Item.validates() == false ) {
+
         callback(null, {
-            statusCode: 200,
+            statusCode: 422,
             body: JSON.stringify({
-                message: `Sucessfully submitted post`,
-            postId: res.id
-            })
-        });
-    })
-    .catch(err => {
-        console.log(err);
-        callback(null, {
-            statusCode: 500,
-            body: JSON.stringify({
-                message: `Unable to submit post`
+                message: Item.errors
             })
         })
-    });
+    }
+    else {
 
+        // Save to permanent storage
+        return dynamoDb.put( Item.parameters ).promise()
+        .then( res => reply )
+        .then( res => {
+
+            callback(null, {
+                statusCode: 200,
+                body: JSON.stringify({
+                    message: `Sucessfully submitted post`,
+                    Id: res.id
+                })
+            });
+        })
+        .catch(err => {
+
+            console.log('=== we have an error saving to permanent storage', err );
+            callback(null, {
+                statusCode: 500,
+                body: JSON.stringify({
+                    message: `Unable to submit post`
+                })
+            })
+        });
+    }
 };

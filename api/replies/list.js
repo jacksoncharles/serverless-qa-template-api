@@ -15,13 +15,13 @@ const dynamoDb = new AWS.DynamoDB.DocumentClient();
 module.exports.list = (event, context, callback) => {
 
     /**
-     * Reply object used to build a query captured in the property "parameters".
+     * Query object used to build this.parameters.
      * 
      * @param  {Object} event - AWS Lambda uses this parameter to pass in event data to the handler.
      * 
      * @constructor
      */
-    var Reply = function( event ) {
+    var Query = function( event ) {
 
         /**
          * Capture the event object passed as a parameter;
@@ -44,16 +44,39 @@ module.exports.list = (event, context, callback) => {
     }
 
      /**
-      * The primary key must be set as a query parameter.
+      * If "threadid" has been passed as an index build the query parameters
       *
       * @return this
       */
-    Reply.prototype.setPrimaryKey = function() {
+    Query.prototype.setThreadIndex = function() {
 
-        this.parameters['KeyConditionExpression'] = "ThreadId = :searchstring";
-        this.parameters['ExpressionAttributeValues'] = {
-            ":searchstring" : this.event.queryStringParameters.threadid
-        };
+        if ( this.event.queryStringParameters && this.event.queryStringParameters.threadid ) {
+
+            this.parameters['IndexName'] = "ThreadIndex";
+            this.parameters['KeyConditionExpression'] = "ThreadId = :searchstring";
+            this.parameters['ExpressionAttributeValues'] = {
+                ":searchstring" : this.event.queryStringParameters.threadid
+            };
+        }
+
+        return this;
+    }
+
+     /**
+      * If "userid" has been passed as an index build the query parameters
+      *
+      * @return this
+      */
+    Query.prototype.setUserIndex = function() {
+
+        if ( this.event.queryStringParameters && this.event.queryStringParameters.userid ) {
+
+            this.parameters['IndexName'] = "UserIndex";
+            this.parameters['KeyConditionExpression'] = "UserId = :searchstring";
+            this.parameters['ExpressionAttributeValues'] = {
+                ":searchstring" : this.event.queryStringParameters.userid
+            };
+        }
 
         return this;
     }
@@ -64,7 +87,7 @@ module.exports.list = (event, context, callback) => {
      * 
      * @return this
      */
-    Reply.prototype.setPagination = function() {
+    Query.prototype.setPagination = function() {
 
         if ( this.event.queryStringParameters ) {
 
@@ -86,7 +109,7 @@ module.exports.list = (event, context, callback) => {
      *
      * @return void
      */
-    Reply.prototype.setLimit = function() {
+    Query.prototype.setLimit = function() {
 
         if ( this.event.queryStringParameters ) {
 
@@ -100,16 +123,17 @@ module.exports.list = (event, context, callback) => {
     }
 
     /**
-     * Instantiate an instance of Reply and build the parameters for the query.
+     * Instantiate an instance of Query and build the parameters.
      * 
-     * @type {Reply}
+     * @type {Query}
      */
-    var Query = new Reply( event )
-        .setPrimaryKey()
+    var Reply = new Query( event )
+        .setThreadIndex()
+        .setUserIndex()
         .setPagination()
         .setLimit();
 
-    dynamoDb.query( Query.parameters, function( error, data ) {
+    dynamoDb.query( Reply.parameters, function( error, data ) {
 
         // Handle potential errors
         if (error) {
