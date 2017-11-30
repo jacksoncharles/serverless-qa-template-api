@@ -44,13 +44,12 @@ module.exports.replyList = (event, context, callback) => {
     }
 
      /**
-      * If "threadid" has been passed as an index build the query parameters
+      * If "threadid" has been passed as parameter this method will build the query.
       *
       * @return this
       */
     Query.prototype.setThreadIndex = function() {
 
-        console.info('inside setThreadIndex updated');
         if ( this.event.queryStringParameters && this.event.queryStringParameters.threadid ) {
 
             this.parameters['IndexName'] = "ThreadIndex";
@@ -60,13 +59,12 @@ module.exports.replyList = (event, context, callback) => {
             };
         }
 
-        console.log('=== this.parameters ===', this.parameters );
         return this;
     }
 
      /**
-      * If "userid" has been passed as an index build the query parameters
-      *
+      * If "userid" has been passed as parameter this method will build the query.
+      * 
       * @return this
       */
     Query.prototype.setUserIndex = function() {
@@ -75,6 +73,7 @@ module.exports.replyList = (event, context, callback) => {
 
             this.parameters['IndexName'] = "UserIndex";
             this.parameters['KeyConditionExpression'] = "UserId = :searchstring";
+            this.parameters['ProjectionExpression'] = "Id, UserId, Message, ReplyDateTime";
             this.parameters['ExpressionAttributeValues'] = {
                 ":searchstring" : this.event.queryStringParameters.userid
             };
@@ -143,8 +142,7 @@ module.exports.replyList = (event, context, callback) => {
             console.log('=== error ===', error );
             callback(null, {
                 statusCode: error.statusCode || 501,
-                headers: { 'Content-Type': 'text/plain' },
-                body: 'Couldn\'t fetch the posts.',
+                body: error.ValidationException || 'Couldn\'t fetch the posts.'
             });
 
             return;

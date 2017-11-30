@@ -243,8 +243,7 @@ resources:
                 AttributeName: "ReplyDateTime"
                 KeyType: RANGE
             Projection:
-              ProjectionType: INCLUDE
-              NonKeyAttributes: "Message, UserName"
+              ProjectionType: ALL
             ProvisionedThroughput:
               ReadCapacityUnits: 1
               WriteCapacityUnits: 1
@@ -259,7 +258,6 @@ resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: INCLUDE
-              NonKeyAttributes: "Message, UserName"
             ProvisionedThroughput:
               ReadCapacityUnits: 1
               WriteCapacityUnits: 1
