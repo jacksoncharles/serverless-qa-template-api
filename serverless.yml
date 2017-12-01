@@ -40,8 +40,8 @@ provider:
 #            - "Ref" : "ServerlessDeploymentBucket"
 #            - "/*"
   environment:
-    DYNAMODB_REPLY_TABLE: Reply
     DYNAMODB_THREAD_TABLE: Thread
+    DYNAMODB_REPLY_TABLE: Reply
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -55,6 +55,50 @@ provider:
       Resource: "*"
       
 functions:
+
+  threadCreate:
+    handler: api/threads/threadCreate.threadCreate
+    memorySize: 128
+    description: Submit thread.
+    events:
+      - http: 
+          path: replies
+          method: post
+          cors: true
+
+  replyList:
+    handler: api/threads/threadList.threadList
+    memorySize: 128
+    description: Retrieve a paginated list of threads.
+    events:
+      - http:
+          path: replies
+          method: get
+          cors: true
+
+  replyUpdate:
+    handler: api/threads/threadUpdate.threadUpdate
+    events:
+      - http:
+          path: threads/{id}
+          method: put
+          cors: true
+
+  replyGet:
+    handler: api/threads/threadGet.threadGet
+    events:
+      - http:
+          path: threads/{id}
+          method: get
+          cors: true
+
+  replyDelete:
+    handler: api/threads/threadDelete.threadDelete
+    events:
+      - http:
+          path: threads/{id}
+          method: delete
+          cors: true
 
   replyCreate:
     handler: api/replies/replyCreate.replyCreate
@@ -77,7 +121,7 @@ functions:
           cors: true
 
   replyUpdate:
-    handler: api/replies/update.update
+    handler: api/replies/replyUpdate.replyUpdate
     events:
       - http:
           path: replies/{id}
@@ -85,7 +129,7 @@ functions:
           cors: true
 
   replyGet:
-    handler: api/replies/get.get
+    handler: api/replies/replyGet.replyGet
     events:
       - http:
           path: replies/{id}
@@ -93,7 +137,7 @@ functions:
           cors: true
 
   replyDelete:
-    handler: api/replies/delete.delete
+    handler: api/replies/replyDelete.replyDelete
     events:
       - http:
           path: replies/{id}
@@ -172,10 +216,10 @@ resources:
             AttributeName: "Id"
             AttributeType: "S"
           -
-            AttributeName: "UserId"
-            AttributeType: "S"
+            AttributeName: "ForumId"
+            AttributeType: "S"            
           -
-            AttributeName: "Message"
+            AttributeName: "UserId"
             AttributeType: "S"
           -
             AttributeName: "ThreadDateTime"
@@ -189,16 +233,30 @@ resources:
             KeyType: "RANGE"
         GlobalSecondaryIndexes:
           -
-            IndexName: Thread-UserId-Message-Index
+            IndexName: ForumIndex
+            KeySchema:
+              -
+                AttributeName: "ForumId"
+                KeyType: HASH
+              -
+                AttributeName: "ThreadDateTime"
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
+          -
+            IndexName: UserIndex
             KeySchema:
               -
                 AttributeName: "UserId"
                 KeyType: HASH
               -
-                AttributeName: "Message"
+                AttributeName: "ThreadDateTime"
                 KeyType: RANGE
             Projection:
-              ProjectionType: KEYS_ONLY
+              ProjectionType: INCLUDE
             ProvisionedThroughput:
               ReadCapacityUnits: 1
               WriteCapacityUnits: 1
@@ -223,14 +281,14 @@ resources:
             AttributeName: "UserId"
             AttributeType: "S"
           -
-            AttributeName: "ReplyDateTime"
+            AttributeName: "CreatedDateTime"
             AttributeType: "S"
         KeySchema:
           -
             AttributeName: "Id"
             KeyType: "HASH"
           -
-            AttributeName: "ReplyDateTime"
+            AttributeName: "CreatedDateTime"
             KeyType: "RANGE"
         GlobalSecondaryIndexes:
           -
@@ -240,7 +298,7 @@ resources:
                 AttributeName: "ThreadId"
                 KeyType: HASH
               -
-                AttributeName: "ReplyDateTime"
+                AttributeName: "CreatedDateTime"
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
@@ -254,7 +312,7 @@ resources:
                 AttributeName: "UserId"
                 KeyType: HASH
               -
-                AttributeName: "ReplyDateTime"
+                AttributeName: "CreatedDateTime"
                 KeyType: RANGE
             Projection:
               ProjectionType: INCLUDE

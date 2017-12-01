@@ -90,7 +90,7 @@ module.exports.replyUpdate = (event, context, callback) => {
             UserId: this.event.queryStringParameters.userid,
             Message: this.event.queryStringParameters.message,
             UserName: this.event.queryStringParameters.username,
-            DateTime: timestamp
+            UpdatedDateTime: timestamp
         };
 
         return this;
@@ -137,89 +137,28 @@ module.exports.replyUpdate = (event, context, callback) => {
     }
     else {
 
-        // Save to permanent storage
-        return dynamoDb.put( Reply.parameters ).promise()
-        .then( res => reply )
-        .then( res => {
+        // Update the post in the database
+        dynamoDb.update( Reply.parameters, (error, result) => {
+        
+            // Handle any potential DynamoDb errors
+            if (error) {
+
+                console.error('=== error ===', error);
+                
+                callback(null, {
+                    statusCode: error.statusCode || 501,
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: 'Couldn\'t fetch the post item.',
+                });
+                return;
+            }
 
             // create a response
             const response = {
-
                 statusCode: 200,
-                body: JSON.stringify(res),
+                body: JSON.stringify(result.Attributes),
             };
-
-
             callback(null, response);
-        })
-        .catch(err => {
-
-            console.log('=== error ===', error );
-            
-            // Handle DynamoDb errors
-            callback(null, {
-                statusCode: 500,
-                body: JSON.stringify({
-                    message: `Unable to submit reply`
-                })
-            })
         });
     }
-
-
-            
-    const timestamp = new Date().getTime();
-    const data = JSON.parse(event.body);
-
-    console.log( '=== data ===', data );
-    console.log( '=== event ===', event );
-
-    // validation
-    if (typeof data.title !== 'string' || typeof data.body !== 'string') {
-
-        console.error('Validation Failed');
-        callback(null, {
-            statusCode: 400,
-            headers: { 'Content-Type': 'text/plain' },
-            body: 'Couldn\'t update the post item.',
-        });
-
-        return;
-    }
-
-    const params = {
-        TableName: process.env.DYNAMODB_TABLE,
-        Key: {
-            id: event.pathParameters.id,
-        },
-        ExpressionAttributeValues: {
-            ':title': data.title,
-            ':body': data.body,
-            ':updated_at': timestamp,
-        },
-        UpdateExpression: 'SET title = :title, body = :body, updated_at = :updated_at',
-        ReturnValues: 'ALL_NEW',
-    };
-
-    // update the post in the database
-    dynamoDb.update(params, (error, result) => {
-    
-        // handle potential errors
-        if (error) {
-            console.error('=== error ===', error);
-            callback(null, {
-                statusCode: error.statusCode || 501,
-                headers: { 'Content-Type': 'text/plain' },
-                body: 'Couldn\'t fetch the post item.',
-            });
-            return;
-        }
-
-        // create a response
-        const response = {
-            statusCode: 200,
-            body: JSON.stringify(result.Attributes),
-        };
-        callback(null, response);
-    });
 };

@@ -93,7 +93,8 @@ module.exports.replyCreate = (event, context, callback) => {
             UserId: this.event.queryStringParameters.userid,
             Message: this.event.queryStringParameters.message,
             UserName: this.event.queryStringParameters.username,
-            DateTime: timestamp
+            CreatedDateTime: timestamp,
+            UpdatedDateTime: timestamp
         };
 
         return this;

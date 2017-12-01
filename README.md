@@ -1,31 +1,68 @@
-# AWS DynamoDb Example Forum
+# Forum Microservice
 
-An [AWS Lambda](https://aws.amazon.com/lambda/) solution written using the [Serverless Toolkit](http://serverless.com) with a [DynamoDB](https://aws.amazon.com/dynamodb) backend.
+A possible starter-for-10 forum microservice.
 
-The service includes pagination, key/value searches plus a collection of common needs including but not limited too, order/by and limit clauses.
+Includes basic functionality such as pagination and global secondary indexes for retrieiving by user or thread. And is loosely inspired by the [AWS Example Forum](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SampleData.CreateTables.html).
+
+Can be built and implemented as part of a distributed solution.
+
+## Technology Stack
+1. [AWS Lambda](https://aws.amazon.com/lambda/)
+2. [Serverless Framework](http://serverless.com)
+3. [DynamoDB](https://aws.amazon.com/dynamodb)
+4. [NodeJs](https://nodejs.org/)
 
 ## Installation & Deployment 
+Deploying the forum microservice will provision and create the following resources.
 
-NOTE: To deploy from your desktop you must have an existing AWS account and command line access.
+1. API Gateway entitled "forum-microservice" with 10 endpoints.
+2. 10 * Lambda functions with associated Cloud Watch logs.
+3. 2 * DynamoDB tables.
 
-Firstly, ensure you have installed the [Serverless Toolkit](http://serverless.com).
+To deploy from your desktop you must have an existing AWS account with command line access. Firstly, ensure you have installed the [Serverless Framework](http://serverless.com).
 
+```
     npm install serverless -g
+```
 
 Then, from the project root folder simply enter the following command to provision and deploy your sevice to AWS.
 
+```
     sls deploy
+```
 
-## EndPoints
+If you wish to load test data into your application you can run the loadData script.
 
-NAME | URL | VERB | DESCRIPTION
----- | --- | ---- | -----------
-CREATE | /replies | POST | Create a new item in permanent storage
-LIST | /replies | GET | Retrieve a paginated listing from permanent storage
-GET | /replies/:id | GET | Retrieve a individual item using the id passed as a route parameter
-UPDATE | /replies/:id | PUT | Update details of a post by providing a full array of model data
-EDIT | /replies/:id | PATCH | Update details of a post by providing only those elements you wish to update
-DELETE | /replies/:id | DELETE | Remove an item from permanent storage
+```
+	./loadData.sh
+```
+
+## Removal
+To remove the solution from AWS at the command line
+
+```
+	sls remove
+```
+
+NOTE: Will automatically remove any Lambda functions, Cloud Watch logs and API Gateway configurations. It will
+not remove DynamoDb tables; They must be deleted manually.
+
+## Lambda Functions and EndPoints
+Will create X Lambda functions accessible via [API Gateway](https://aws.amazon.com/api-gateway/) configured endpoints.
+
+NAME | LAMBDA | URL | VERB | DESCRIPTION
+---- | ------ | --- | ---- | -----------
+CREATE | threadCreate | /threads | POST | Create a new item in permanent storage.
+LIST | | threadList | /threads | GET | Retrieve a paginated listing from permanent storage.
+GET | | threadGet | /threads/:id | GET | Retrieve a individual item using the ```threadid``` or ```userid``` passed in the query string.
+UPDATE | threadUpdate| /threads/:id | PUT | Update details of a post by providing a full array of model data.
+DELETE | threadDelete | /threads/:id | DELETE | Remove an item from permanent storage.
+CREATE | replyCreate | /replies | POST | Create a new item in permanent storage.
+LIST | replyList | /replies | GET | Retrieve a paginated listing from permanent storage.
+GET | replyGet | /replies/:id | GET | Retrieve a individual item using the ```threadid``` or ```userid``` passed in the query string.
+UPDATE | replyUpdate | /replies/:id | PUT | Update details of a post by providing a full array of model data.
+DELETE | replyDelete | /replies/:id | DELETE | Remove an item from permanent storage.
+
 
 ## Issues
-Please report any bugs on the [Issue Tracker](https://github.com/jacksoncharles/dynamodb-example-forum/issues).
+Please report any feedback on the [Issue Tracker](https://github.com/jacksoncharles/forum-microservice/issues).

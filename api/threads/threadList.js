@@ -12,7 +12,7 @@ const dynamoDb = new AWS.DynamoDB.DocumentClient();
  * 
  * @return JSON    JSON encoded response.
  */
-module.exports.replyList = (event, context, callback) => {
+module.exports.threadList = (event, context, callback) => {
 
     /**
      * Query object used to build this.parameters.
@@ -39,7 +39,7 @@ module.exports.replyList = (event, context, callback) => {
          * @type Object
          */
         this.parameters = {
-            TableName: 'Reply'
+            TableName: 'Thread'
         }
 
         /**
@@ -50,11 +50,6 @@ module.exports.replyList = (event, context, callback) => {
          */
         this.validator = schema({
 
-            ThreadId: {
-                type: 'string',
-                required: false,
-                message: 'threadid is not a string.'
-            },
             UserId: {
                 type: 'number',
                 required: false,
@@ -78,40 +73,11 @@ module.exports.replyList = (event, context, callback) => {
      */
     Query.prototype.validates = function() {
 
-        if ( this.event.hasOwnProperty('queryStringParameters') == false ) {
+        this.errors = [];
 
-            this.errors[] = {
-                code: 422,
-                message: 'No query string parameters passed, threadid or userid required'
-            };
-            
-        } else {
-
-            this.errors = this.validator.validate( this.event.queryStringParameters );    
-        }
-
-        
+        this.errors = this.validator.validate( this.event.queryStringParameters );    
 
         return this.errors.length ? 0 : 1;
-    }
-
-    /**
-     * If "threadid" has been passed as parameter this method will build the query.
-     *
-     * @return this
-     */
-    Query.prototype.setThreadIndex = function() {
-
-        if ( this.event.queryStringParameters && this.event.queryStringParameters.threadid ) {
-
-            this.parameters['IndexName'] = "ThreadIndex";
-            this.parameters['KeyConditionExpression'] = "ThreadId = :searchstring";
-            this.parameters['ExpressionAttributeValues'] = {
-                ":searchstring" : this.event.queryStringParameters.threadid
-            };
-        }
-
-        return this;
     }
 
      /**
@@ -145,11 +111,11 @@ module.exports.replyList = (event, context, callback) => {
         if ( this.event.queryStringParameters ) {
 
             // Pagination
-            if ( this.event.queryStringParameters.hasOwnProperty('threadid') && this.event.queryStringParameters.hasOwnProperty('CreatedDateTime') ) {
+            if ( this.event.queryStringParameters.hasOwnProperty('id') && this.event.queryStringParameters.hasOwnProperty('threaddatetime') ) {
 
                 this.parameters['ExclusiveStartKey'] = {
-                    ThreadId: this.event.queryStringParameters.threadid,
-                    DateTime: this.event.queryStringParameters.CreatedDateTime
+                    Id: this.event.queryStringParameters.id,
+                    ThreadDateTime: this.event.queryStringParameters.threaddatetime
                 }
             }
         }
@@ -201,15 +167,16 @@ module.exports.replyList = (event, context, callback) => {
         .setPagination()
         .setLimit();
 
+        // Run the DynamoDb query.
         dynamoDb.query( Reply.parameters, function( error, data ) {
 
-            // Handle potential errors
+            // Handle any potential DynamoDb errors
             if (error) {
 
                 console.log('=== error ===', error );
                 callback(null, {
                     statusCode: error.statusCode || 501,
-                    body: error.ValidationException || 'Couldn\'t fetch the replies.'
+                    body: error.ValidationException || 'Couldn\'t fetch the threads.'
                 });
 
                 return;
