@@ -2,6 +2,8 @@
 
 const uuid = require('uuid');
 const AWS = require('aws-sdk'); 
+var schema = require('validate');
+
 AWS.config.setPromisesDependency(require('bluebird'));
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
@@ -16,7 +18,7 @@ const dynamoDb = new AWS.DynamoDB.DocumentClient();
  */
 module.exports.replyCreate = (event, context, callback) => {
 
-    var Reply = function( event ) {
+    var Query = function( event ) {
 
         /**
          * Capture the event object passed as a parameter;
@@ -39,6 +41,36 @@ module.exports.replyCreate = (event, context, callback) => {
         }
 
         /**
+         * Holds the schema for validating the parameters passed with the request. Anything failing
+         * validation will be stored inside this.errors
+         * 
+         * @type {Object}
+         */
+        this.validator = schema({
+
+            ThreadId: {
+                type: 'string',
+                required: true,
+                message: 'threadid is required.'                
+            },
+            UserId: {
+                type: 'number',
+                required: true,
+                message: 'userid is required.'                
+            },
+            Message: {
+                type: 'string',
+                required: true,
+                message: 'message is required.'                
+            },
+            UserName: {
+                type: 'string',
+                required: true,
+                message: 'username is required.'                
+            }
+        });
+
+        /**
          * Used to hold any validation messages.
          * 
          * @type {Array}
@@ -51,7 +83,7 @@ module.exports.replyCreate = (event, context, callback) => {
      * 
      * @return {this}
      */
-    Reply.prototype.hydrate = function() {
+    Query.prototype.hydrate = function() {
 
         const timestamp = new Date().getTime();
 
@@ -72,52 +104,66 @@ module.exports.replyCreate = (event, context, callback) => {
      * 
      * @return {this}
      */
-    Reply.prototype.validates = function() {
+    Query.prototype.validates = function() {
 
         this.errors = [];
 
+        /*
         if ( this.event.queryStringParameters.hasOwnProperty('threadid') == false && typeof this.event.queryStringParameters.threadid !== 'string' ) this.errors.push('threadid missing or invalid');
         if ( this.event.queryStringParameters.hasOwnProperty('userid') == false && typeof this.event.queryStringParameters.userid !== 'string' ) this.errors.push('userid missing or invalid');
         if ( this.event.queryStringParameters.hasOwnProperty('message') == false && typeof this.event.queryStringParameters.message !== 'string' ) this.errors.push('message missing or invalid');
         if ( this.event.queryStringParameters.hasOwnProperty('username') == false && typeof this.event.queryStringParameters.username !== 'string' ) this.errors.push('username missing or invalid');
+        */
+        // Validate the query parameters
+        this.errors = this.validator.validate( this.event.queryStringParameters );
 
         return this.errors.length ? 0 : 1;
     }
 
-    // Instantiate an instance of Reply and build the Item.
-    var Item = new Reply( event );
+    /**
+     * Instantiate an instance of Query
+     * 
+     * @type {Query}
+     */
+    var Reply = new Query( event );
 
-    if ( Item.validates() == false ) {
+    // Check to see if the parameters passed in the request validate.
+    if ( Reply.validates() == false ) {
 
+        // Handle validation errors
         callback(null, {
             statusCode: 422,
             body: JSON.stringify({
-                message: Item.errors
+                message: Reply.errors
             })
         })
     }
     else {
 
         // Save to permanent storage
-        return dynamoDb.put( Item.parameters ).promise()
+        return dynamoDb.put( Reply.parameters ).promise()
         .then( res => reply )
         .then( res => {
 
-            callback(null, {
+            // create a response
+            const response = {
+
                 statusCode: 200,
-                body: JSON.stringify({
-                    message: `Sucessfully submitted post`,
-                    Id: res.id
-                })
-            });
+                body: JSON.stringify(res),
+            };
+
+
+            callback(null, response);
         })
         .catch(err => {
 
-            console.log('=== we have an error saving to permanent storage', err );
+            console.log('=== error ===', error );
+            
+            // Handle DynamoDb errors
             callback(null, {
                 statusCode: 500,
                 body: JSON.stringify({
-                    message: `Unable to submit post`
+                    message: `Unable to submit reply`
                 })
             })
         });

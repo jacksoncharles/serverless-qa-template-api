@@ -41,13 +41,65 @@ module.exports.replyList = (event, context, callback) => {
         this.parameters = {
             TableName: 'Reply'
         }
+
+        /**
+         * Holds the schema for validating the parameters passed with the request. Anything failing
+         * validation will be stored inside this.errors
+         * 
+         * @type {Object}
+         */
+        this.validator = schema({
+
+            ThreadId: {
+                type: 'string',
+                required: false,
+                message: 'threadid is not a string.'
+            },
+            UserId: {
+                type: 'number',
+                required: false,
+                message: 'userid is not a number.'
+            }
+        });
+
+        /**
+         * Used to hold any validation errors.
+         * 
+         * @type {Array}
+         */
+        this.errors = [];
+
     }
 
-     /**
-      * If "threadid" has been passed as parameter this method will build the query.
-      *
-      * @return this
-      */
+    /**
+     * Validates the parameters passed
+     * 
+     * @return {boolean} 
+     */
+    Query.prototype.validates = function() {
+
+        if ( this.event.hasOwnProperty('queryStringParameters') == false ) {
+
+            this.errors[] = {
+                code: 422,
+                message: 'No query string parameters passed, threadid or userid required'
+            };
+            
+        } else {
+
+            this.errors = this.validator.validate( this.event.queryStringParameters );    
+        }
+
+        
+
+        return this.errors.length ? 0 : 1;
+    }
+
+    /**
+     * If "threadid" has been passed as parameter this method will build the query.
+     *
+     * @return this
+     */
     Query.prototype.setThreadIndex = function() {
 
         if ( this.event.queryStringParameters && this.event.queryStringParameters.threadid ) {
@@ -124,36 +176,54 @@ module.exports.replyList = (event, context, callback) => {
     }
 
     /**
-     * Instantiate an instance of Query and build the parameters.
+     * Instantiate an instance of Query
      * 
      * @type {Query}
      */
-    var Reply = new Query( event )
+    var Reply = new Query( event );
+
+    // Check to see if the parameters passed in the request validate.
+    if ( Reply.validates() == false ) {
+
+        // Handle validation errors
+        callback(null, {
+            statusCode: 422,
+            body: JSON.stringify({
+                message: Reply.errors
+            })
+        })
+    }
+    else {
+
+        Reply
         .setThreadIndex()
         .setUserIndex()
         .setPagination()
         .setLimit();
 
-    dynamoDb.query( Reply.parameters, function( error, data ) {
+        dynamoDb.query( Reply.parameters, function( error, data ) {
 
-        // Handle potential errors
-        if (error) {
+            // Handle potential errors
+            if (error) {
 
-            console.log('=== error ===', error );
-            callback(null, {
-                statusCode: error.statusCode || 501,
-                body: error.ValidationException || 'Couldn\'t fetch the posts.'
-            });
+                console.log('=== error ===', error );
+                callback(null, {
+                    statusCode: error.statusCode || 501,
+                    body: error.ValidationException || 'Couldn\'t fetch the posts.'
+                });
 
-            return;
+                return;
+            }
+            else {
+
+                // Create a response
+                const response = {
+                    statusCode: 200,
+                    body: JSON.stringify(data),
+                };
+
+                callback(null, response);
+            }
         }
-
-        // Create a response
-        const response = {
-            statusCode: 200,
-            body: JSON.stringify(data),
-        };
-
-        callback(null, response);
     });
 };

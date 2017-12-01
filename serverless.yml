@@ -57,7 +57,7 @@ provider:
 functions:
 
   replyCreate:
-    handler: api/replies/create.create
+    handler: api/replies/replyCreate.replyCreate
     memorySize: 128
     description: Submit post information.
     events:
