@@ -1,10 +1,6 @@
 'use strict';
 
-const uuid = require('uuid');
-const AWS = require('aws-sdk'); 
-var schema = require('validate');
-
-AWS.config.setPromisesDependency(require('bluebird'));
+const AWS = require('aws-sdk'); // eslint-disable-line import/no-extraneous-dependencies
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 /**
@@ -16,7 +12,7 @@ const dynamoDb = new AWS.DynamoDB.DocumentClient();
  * 
  * @return JSON    JSON encoded response.
  */
-module.exports.replyCreate = (event, context, callback) => {
+module.exports.threadUpdate = (event, context, callback) => {
 
     var QueryBuilder = function( event ) {
 
@@ -36,7 +32,7 @@ module.exports.replyCreate = (event, context, callback) => {
          * @type Object
          */
         this.parameters = {
-            TableName: 'Reply'
+            TableName: 'Thread'
             Item: {}
         }
 
@@ -58,6 +54,11 @@ module.exports.replyCreate = (event, context, callback) => {
                 required: true,
                 message: 'userid is required.'                
             },
+            Title: {
+                type: 'string',
+                required: true,
+                message: 'title is required.'                
+            },            
             Message: {
                 type: 'string',
                 required: true,
@@ -76,6 +77,7 @@ module.exports.replyCreate = (event, context, callback) => {
          * @type {Array}
          */
         this.errors = [];
+
     }
 
     /**
@@ -91,9 +93,9 @@ module.exports.replyCreate = (event, context, callback) => {
             Id: uuid.v1(),
             ThreadId: this.event.queryStringParameters.threadid,
             UserId: this.event.queryStringParameters.userid,
+            Title: this.event.queryStringParameters.title,
             Message: this.event.queryStringParameters.message,
             UserName: this.event.queryStringParameters.username,
-            CreatedDateTime: timestamp,
             UpdatedDateTime: timestamp
         };
 
@@ -141,32 +143,28 @@ module.exports.replyCreate = (event, context, callback) => {
     }
     else {
 
-        // Save to permanent storage
-        return dynamoDb.put( Query.hydrate().parameters ).promise()
-        .then( res => reply )
-        .then( res => {
+        // Update the post in the database
+        dynamoDb.update( Query.hydrate().parameters, (error, result) => {
+        
+            // Handle any potential DynamoDb errors
+            if (error) {
+
+                console.error('=== error ===', error);
+                
+                callback(null, {
+                    statusCode: error.statusCode || 501,
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: 'Couldn\'t fetch the post item.',
+                });
+                return;
+            }
 
             // create a response
             const response = {
-
                 statusCode: 200,
-                body: JSON.stringify(res),
+                body: JSON.stringify(result.Attributes),
             };
-
-
             callback(null, response);
-        })
-        .catch(err => {
-
-            console.log('=== error ===', error );
-            
-            // Handle DynamoDb errors
-            callback(null, {
-                statusCode: 500,
-                body: JSON.stringify({
-                    message: `Unable to submit reply`
-                })
-            })
         });
     }
 };

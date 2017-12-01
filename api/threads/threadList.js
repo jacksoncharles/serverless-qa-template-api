@@ -21,7 +21,7 @@ module.exports.threadList = (event, context, callback) => {
      * 
      * @constructor
      */
-    var Query = function( event ) {
+    var QueryBuilder = function( event ) {
 
         /**
          * Capture the event object passed as a parameter;
@@ -144,31 +144,31 @@ module.exports.threadList = (event, context, callback) => {
     /**
      * Instantiate an instance of Query
      * 
-     * @type {Query}
+     * @type {QueryBuilder}
      */
-    var Reply = new Query( event );
+    var Query = new QueryBuilder( event );
 
     // Check to see if the parameters passed in the request validate.
-    if ( Reply.validates() == false ) {
+    if ( Query.validates() == false ) {
 
         // Handle validation errors
         callback(null, {
             statusCode: 422,
             body: JSON.stringify({
-                message: Reply.errors
+                message: Query.errors
             })
         })
     }
     else {
 
-        Reply
+        Query
         .setThreadIndex()
         .setUserIndex()
         .setPagination()
         .setLimit();
 
         // Run the DynamoDb query.
-        dynamoDb.query( Reply.parameters, function( error, data ) {
+        dynamoDb.query( Query.parameters, function( error, data ) {
 
             // Handle any potential DynamoDb errors
             if (error) {

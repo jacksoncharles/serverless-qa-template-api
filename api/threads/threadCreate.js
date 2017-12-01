@@ -16,7 +16,7 @@ const dynamoDb = new AWS.DynamoDB.DocumentClient();
  * 
  * @return JSON    JSON encoded response.
  */
-module.exports.replyCreate = (event, context, callback) => {
+module.exports.threadCreate = (event, context, callback) => {
 
     var QueryBuilder = function( event ) {
 
@@ -36,7 +36,7 @@ module.exports.replyCreate = (event, context, callback) => {
          * @type Object
          */
         this.parameters = {
-            TableName: 'Reply'
+            TableName: 'Thread'
             Item: {}
         }
 
@@ -58,6 +58,11 @@ module.exports.replyCreate = (event, context, callback) => {
                 required: true,
                 message: 'userid is required.'                
             },
+            Title: {
+                type: 'string',
+                required: true,
+                message: 'title is required.'                
+            },            
             Message: {
                 type: 'string',
                 required: true,
@@ -91,6 +96,7 @@ module.exports.replyCreate = (event, context, callback) => {
             Id: uuid.v1(),
             ThreadId: this.event.queryStringParameters.threadid,
             UserId: this.event.queryStringParameters.userid,
+            Title: this.event.queryStringParameters.title,
             Message: this.event.queryStringParameters.message,
             UserName: this.event.queryStringParameters.username,
             CreatedDateTime: timestamp,

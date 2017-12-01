@@ -15,13 +15,13 @@ const dynamoDb = new AWS.DynamoDB.DocumentClient();
 module.exports.replyList = (event, context, callback) => {
 
     /**
-     * Query object used to build this.parameters.
+     * QueryBuilder object used to build this.parameters.
      * 
      * @param  {Object} event - AWS Lambda uses this parameter to pass in event data to the handler.
      * 
      * @constructor
      */
-    var Query = function( event ) {
+    var QueryBuilder = function( event ) {
 
         /**
          * Capture the event object passed as a parameter;
@@ -76,7 +76,7 @@ module.exports.replyList = (event, context, callback) => {
      * 
      * @return {boolean} 
      */
-    Query.prototype.validates = function() {
+    QueryBuilder.prototype.validates = function() {
 
         if ( this.event.hasOwnProperty('queryStringParameters') == false ) {
 
@@ -100,7 +100,7 @@ module.exports.replyList = (event, context, callback) => {
      *
      * @return this
      */
-    Query.prototype.setThreadIndex = function() {
+    QueryBuilder.prototype.setThreadIndex = function() {
 
         if ( this.event.queryStringParameters && this.event.queryStringParameters.threadid ) {
 
@@ -119,7 +119,7 @@ module.exports.replyList = (event, context, callback) => {
       * 
       * @return this
       */
-    Query.prototype.setUserIndex = function() {
+    QueryBuilder.prototype.setUserIndex = function() {
 
         if ( this.event.queryStringParameters && this.event.queryStringParameters.userid ) {
 
@@ -140,7 +140,7 @@ module.exports.replyList = (event, context, callback) => {
      * 
      * @return this
      */
-    Query.prototype.setPagination = function() {
+    QueryBuilder.prototype.setPagination = function() {
 
         if ( this.event.queryStringParameters ) {
 
@@ -158,11 +158,11 @@ module.exports.replyList = (event, context, callback) => {
     }
 
     /**
-     * Override the default value of "Limit" with any value passed by the query string.
+     * Set a value for "Limit" with any value passed by the query string.
      *
      * @return void
      */
-    Query.prototype.setLimit = function() {
+    QueryBuilder.prototype.setLimit = function() {
 
         if ( this.event.queryStringParameters ) {
 
@@ -176,32 +176,32 @@ module.exports.replyList = (event, context, callback) => {
     }
 
     /**
-     * Instantiate an instance of Query
+     * Instantiate an instance of QueryBuilder
      * 
-     * @type {Query}
+     * @type {QueryBuilder}
      */
-    var Reply = new Query( event );
+    var Query = new QueryBuilder( event );
 
     // Check to see if the parameters passed in the request validate.
-    if ( Reply.validates() == false ) {
+    if ( Query.validates() == false ) {
 
         // Handle validation errors
         callback(null, {
             statusCode: 422,
             body: JSON.stringify({
-                message: Reply.errors
+                message: Query.errors
             })
         })
     }
     else {
 
-        Reply
+        Query
         .setThreadIndex()
         .setUserIndex()
         .setPagination()
         .setLimit();
 
-        dynamoDb.query( Reply.parameters, function( error, data ) {
+        dynamoDb.query( Query.parameters, function( error, data ) {
 
             // Handle potential errors
             if (error) {

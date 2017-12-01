@@ -14,7 +14,7 @@ const dynamoDb = new AWS.DynamoDB.DocumentClient();
  */
 module.exports.replyUpdate = (event, context, callback) => {
 
-    var Reply = function( event ) {
+    var QueryBuilder = function( event ) {
 
         /**
          * Capture the event object passed as a parameter;
@@ -80,7 +80,7 @@ module.exports.replyUpdate = (event, context, callback) => {
      * 
      * @return {this}
      */
-    Query.prototype.hydrate = function() {
+    QueryBuilder.prototype.hydrate = function() {
 
         const timestamp = new Date().getTime();
 
@@ -101,7 +101,7 @@ module.exports.replyUpdate = (event, context, callback) => {
      * 
      * @return {this}
      */
-    Query.prototype.validates = function() {
+    QueryBuilder.prototype.validates = function() {
 
         this.errors = [];
 
@@ -120,25 +120,25 @@ module.exports.replyUpdate = (event, context, callback) => {
     /**
      * Instantiate an instance of Query
      * 
-     * @type {Query}
+     * @type {QueryBuilder}
      */
-    var Reply = new Query( event );
+    var Query = new QueryBuilder( event );
 
     // Check to see if the parameters passed in the request validate.
-    if ( Reply.validates() == false ) {
+    if ( Query.validates() == false ) {
 
         // Handle validation errors
         callback(null, {
             statusCode: 422,
             body: JSON.stringify({
-                message: Reply.errors
+                message: Query.errors
             })
         })
     }
     else {
 
         // Update the post in the database
-        dynamoDb.update( Reply.parameters, (error, result) => {
+        dynamoDb.update( Query.hydrate().parameters, (error, result) => {
         
             // Handle any potential DynamoDb errors
             if (error) {

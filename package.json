@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "bluebird": "^3.5.1",
+    "lint": "^1.1.2",
     "uuid": "^3.1.0",
     "validate": "^3.0.1"
   }
