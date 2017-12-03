@@ -2,6 +2,7 @@
 
 const AWS = require('aws-sdk'); // eslint-disable-line import/no-extraneous-dependencies
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
+const validator = require('validator');
 
 /**
  * Handler for the lambda function.
@@ -14,6 +15,8 @@ const dynamoDb = new AWS.DynamoDB.DocumentClient();
  */
 module.exports.replyList = (event, context, callback) => {
 
+    let e = event;
+
     /**
      * QueryBuilder object used to build this.parameters.
      * 
@@ -21,14 +24,7 @@ module.exports.replyList = (event, context, callback) => {
      * 
      * @constructor
      */
-    var QueryBuilder = function( event ) {
-
-        /**
-         * Capture the event object passed as a parameter;
-         * 
-         * @type event
-         */
-        this.event = event;
+    function QueryBuilder() {
 
         /**
          * Used to hold the dynamodb query parameters built using values
@@ -43,33 +39,12 @@ module.exports.replyList = (event, context, callback) => {
         }
 
         /**
-         * Holds the schema for validating the parameters passed with the request. Anything failing
-         * validation will be stored inside this.errors
-         * 
-         * @type {Object}
-         */
-        this.validator = schema({
-
-            ThreadId: {
-                type: 'string',
-                required: false,
-                message: 'threadid is not a string.'
-            },
-            UserId: {
-                type: 'number',
-                required: false,
-                message: 'userid is not a number.'
-            }
-        });
-
-        /**
          * Used to hold any validation errors.
          * 
          * @type {Array}
          */
         this.errors = [];
-
-    }
+    };
 
     /**
      * Validates the parameters passed
@@ -78,19 +53,22 @@ module.exports.replyList = (event, context, callback) => {
      */
     QueryBuilder.prototype.validates = function() {
 
-        if ( this.event.hasOwnProperty('queryStringParameters') == false ) {
+        this.errors = [];
+        
+        if ( e.hasOwnProperty('queryStringParameters') ) {
 
-            this.errors[] = {
-                code: 422,
-                message: 'No query string parameters passed, threadid or userid required'
-            };
+            if ( validator.isAlphanumeric(e.queryStringParameters.threadid) == false ) {
+                this.errors.push( new Error('threadid must be an alphanumeric string') );    
+            }
+            
+            if ( validator.isNumeric(e.queryStringParameters.userid) == false ) {
+                this.errors.push( new Error('userid must be numeric') );
+            }
             
         } else {
 
-            this.errors = this.validator.validate( this.event.queryStringParameters );    
+            this.errors.push( new Error('No query string parameters passed, threadid or userid required') );
         }
-
-        
 
         return this.errors.length ? 0 : 1;
     }
@@ -102,12 +80,12 @@ module.exports.replyList = (event, context, callback) => {
      */
     QueryBuilder.prototype.setThreadIndex = function() {
 
-        if ( this.event.queryStringParameters && this.event.queryStringParameters.threadid ) {
+        if( e.queryStringParameters.hasOwnProperty('threadid') ) {
 
             this.parameters['IndexName'] = "ThreadIndex";
             this.parameters['KeyConditionExpression'] = "ThreadId = :searchstring";
             this.parameters['ExpressionAttributeValues'] = {
-                ":searchstring" : this.event.queryStringParameters.threadid
+                ":searchstring" : e.queryStringParameters.threadid
             };
         }
 
@@ -121,13 +99,12 @@ module.exports.replyList = (event, context, callback) => {
       */
     QueryBuilder.prototype.setUserIndex = function() {
 
-        if ( this.event.queryStringParameters && this.event.queryStringParameters.userid ) {
+        if ( e.queryStringParameters.hasOwnProperty('userid') ) {
 
             this.parameters['IndexName'] = "UserIndex";
             this.parameters['KeyConditionExpression'] = "UserId = :searchstring";
-            this.parameters['ProjectionExpression'] = "Id, UserId, Message, CreatedDateTime";
             this.parameters['ExpressionAttributeValues'] = {
-                ":searchstring" : this.event.queryStringParameters.userid
+                ":searchstring" : e.queryStringParameters.userid
             };
         }
 
@@ -142,15 +119,12 @@ module.exports.replyList = (event, context, callback) => {
      */
     QueryBuilder.prototype.setPagination = function() {
 
-        if ( this.event.queryStringParameters ) {
+        // Pagination
+        if ( e.queryStringParameters.hasOwnProperty('threadid') && e.queryStringParameters.hasOwnProperty('createddatetime') ) {
 
-            // Pagination
-            if ( this.event.queryStringParameters.hasOwnProperty('threadid') && this.event.queryStringParameters.hasOwnProperty('CreatedDateTime') ) {
-
-                this.parameters['ExclusiveStartKey'] = {
-                    ThreadId: this.event.queryStringParameters.threadid,
-                    DateTime: this.event.queryStringParameters.CreatedDateTime
-                }
+            this.parameters['ExclusiveStartKey'] = {
+                ThreadId: e.queryStringParameters.threadid,
+                DateTime: e.queryStringParameters.createddatetime
             }
         }
 
@@ -164,12 +138,9 @@ module.exports.replyList = (event, context, callback) => {
      */
     QueryBuilder.prototype.setLimit = function() {
 
-        if ( this.event.queryStringParameters ) {
+        if ( e.queryStringParameters.hasOwnProperty('limit') ) {
 
-            if ( this.event.queryStringParameters.hasOwnProperty('limit') ) {
-
-                this.parameters['Limit'] = this.event.queryStringParameters.limit;
-            }
+            this.parameters['Limit'] = e.queryStringParameters.limit;
         }
 
         return this;
@@ -180,20 +151,9 @@ module.exports.replyList = (event, context, callback) => {
      * 
      * @type {QueryBuilder}
      */
-    var Query = new QueryBuilder( event );
+    let Query = new QueryBuilder();
 
-    // Check to see if the parameters passed in the request validate.
-    if ( Query.validates() == false ) {
-
-        // Handle validation errors
-        callback(null, {
-            statusCode: 422,
-            body: JSON.stringify({
-                message: Query.errors
-            })
-        })
-    }
-    else {
+    if ( Query.validates() ) {
 
         Query
         .setThreadIndex()
@@ -206,11 +166,8 @@ module.exports.replyList = (event, context, callback) => {
             // Handle potential errors
             if (error) {
 
-                console.log('=== error ===', error );
-                callback(null, {
-                    statusCode: error.statusCode || 501,
-                    body: error.ValidationException || 'Couldn\'t fetch the replies.'
-                });
+                console.log('=== dynamodb validation error ===', JSON.stringify( error ));
+                callback(null, JSON.stringify( error ) );
 
                 return;
             }
@@ -224,6 +181,14 @@ module.exports.replyList = (event, context, callback) => {
 
                 callback(null, response);
             }
-        }
-    });
+        })
+    }
+    else {
+
+        // Handle validation errors
+        callback(null, {
+            statusCode: 422,
+            body: JSON.stringify(Query.errors)
+        });
+    }
 };
