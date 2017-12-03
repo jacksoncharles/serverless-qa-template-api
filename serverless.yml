@@ -66,7 +66,7 @@ functions:
           method: post
           cors: true
 
-  replyList:
+  threadList:
     handler: api/threads/threadList.threadList
     memorySize: 128
     description: Retrieve a paginated list of threads.
@@ -76,7 +76,7 @@ functions:
           method: get
           cors: true
 
-  replyUpdate:
+  threadUpdate:
     handler: api/threads/threadUpdate.threadUpdate
     events:
       - http:
@@ -84,7 +84,7 @@ functions:
           method: put
           cors: true
 
-  replyGet:
+  threadGet:
     handler: api/threads/threadGet.threadGet
     events:
       - http:
@@ -92,7 +92,7 @@ functions:
           method: get
           cors: true
 
-  replyDelete:
+  threadDelete:
     handler: api/threads/threadDelete.threadDelete
     events:
       - http:
@@ -256,7 +256,7 @@ resources:
                 AttributeName: "ThreadDateTime"
                 KeyType: RANGE
             Projection:
-              ProjectionType: INCLUDE
+              ProjectionType: ALL
             ProvisionedThroughput:
               ReadCapacityUnits: 1
               WriteCapacityUnits: 1
@@ -315,7 +315,7 @@ resources:
                 AttributeName: "CreatedDateTime"
                 KeyType: RANGE
             Projection:
-              ProjectionType: INCLUDE
+              ProjectionType: ALL
             ProvisionedThroughput:
               ReadCapacityUnits: 1
               WriteCapacityUnits: 1
