@@ -21,7 +21,7 @@ module.exports.replyList = (event, context, callback) => {
      * 
      * @type {QueryBuilder}
      */
-    let Query = new ReplyQueryBuilder( event );
+    let Query = new ReplyQueryBuilder( event.queryStringParameters );
 
     if ( Query.validates() ) {
 

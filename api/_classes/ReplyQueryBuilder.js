@@ -10,9 +10,14 @@ const validator = require('validator');
  */
 module.exports = class ReplyQueryBuilder {
 
-	constructor( event ) {
+	constructor( criterion ) {
 
-		this._event = event;
+		/**
+		 * Key/value pairs used to build our DynamoDb parameters.
+		 *
+		 * @type {object}
+		 */
+		this._criterion = criterion;
 
 		/**
          * Used to hold the dynamodb query parameters built using values
@@ -83,36 +88,29 @@ module.exports = class ReplyQueryBuilder {
 
 		this._errors = []; // Reset the errors array before running thr logic
 
-        if ( this._event.hasOwnProperty( 'queryStringParameters' ) ) { 
+    	if( this._criterion.hasOwnProperty( 'threadid' ) == false &&
+    		this._criterion.hasOwnProperty( 'userid' ) == false
+    	) {
 
-        	if( this._event.queryStringParameters.hasOwnProperty( 'threadid' ) == false &&
-        		this._event.queryStringParameters.hasOwnProperty( 'userid' ) == false
-        	) {
+			this._errors.push( new Error( 'You must provide a threadid or userid parameter' ) );
+    	}
 
-				this._errors.push( new Error( 'You must provide a threadid or userid parameter' ) );
-        	}
+        if( this_criterion.hasOwnProperty( 'threadid' ) ) {
 
-            if( this._event.queryStringParameters.hasOwnProperty( 'threadid' ) ) {
+            if ( validator.isAlphanumeric( this._criterion.threadid ) == false ) {
 
-                if ( validator.isAlphanumeric( this._event.queryStringParameters.threadid ) == false ) {
-
-                    this._errors.push( new Error( 'Your threadid parameter must be an alphanumeric string' ) );
-                }
+                this._errors.push( new Error( 'Your threadid parameter must be an alphanumeric string' ) );
             }
-            
-            if( this._event.queryStringParameters.hasOwnProperty('userid') ) {
-
-                if ( validator.isNumeric( this._event.queryStringParameters.userid ) == false ) {
-
-                    this._errors.push( new Error( 'Your userid parameter must be numeric' ) );
-                }
-            }
-            
-        } else {
-
-            this._errors.push( new Error('You must provide a threadid or userid parameter') );
         }
+        
+        if( this._criterion.hasOwnProperty('userid') ) {
 
+            if ( validator.isNumeric( this._criterion.userid ) == false ) {
+
+                this._errors.push( new Error( 'Your userid parameter must be numeric' ) );
+            }
+        }
+            
         return this._errors.length > 0 ? 0 : 1;		
 	}
 
@@ -123,12 +121,12 @@ module.exports = class ReplyQueryBuilder {
      */
     buildThreadIndex() {
 
-        if( this._event.queryStringParameters.hasOwnProperty('threadid') ) {
+        if( this._criterion.hasOwnProperty('threadid') ) {
 
             this._parameters['IndexName'] = "ThreadIndex";
             this._parameters['KeyConditionExpression'] = "ThreadId = :searchstring";
             this._parameters['ExpressionAttributeValues'] = {
-                ":searchstring" : this._event.queryStringParameters.threadid
+                ":searchstring" : this._criterion.threadid
             };
         }
 
@@ -142,12 +140,12 @@ module.exports = class ReplyQueryBuilder {
       */
     buildUserIndex() {
 
-        if ( this._event.queryStringParameters.hasOwnProperty('userid') ) {
+        if ( this._criterion.hasOwnProperty('userid') ) {
 
             this._parameters['IndexName'] = "UserIndex";
             this._parameters['KeyConditionExpression'] = "UserId = :searchstring";
             this._parameters['ExpressionAttributeValues'] = {
-                ":searchstring" : this._event.queryStringParameters.userid
+                ":searchstring" : this._criterion.userid
             };
         }
 
@@ -161,13 +159,13 @@ module.exports = class ReplyQueryBuilder {
      */
     buildPagination() {
 
-        if ( this._event.queryStringParameters.hasOwnProperty('threadid') && 
-        	this._event.queryStringParameters.hasOwnProperty('createddatetime') ) 
+        if ( this._criterion.hasOwnProperty('threadid') && 
+        	this._criterion.hasOwnProperty('createddatetime') ) 
         {
 
             this._parameters['ExclusiveStartKey'] = {
-                ThreadId: this._event.queryStringParameters.threadid,
-                DateTime: this._event.queryStringParameters.createddatetime
+                ThreadId: this._criterion.threadid,
+                DateTime: this._criterion.createddatetime
             }
         }
 
@@ -181,9 +179,9 @@ module.exports = class ReplyQueryBuilder {
      */
     buildLimit() {
 
-        if ( this._event.queryStringParameters.hasOwnProperty('limit') ) {
+        if ( this._criterion.hasOwnProperty('limit') ) {
 
-            this._parameters['Limit'] = this._event.queryStringParameters.limit;
+            this._parameters['Limit'] = this._criterion.limit;
         }
 
         return this;
