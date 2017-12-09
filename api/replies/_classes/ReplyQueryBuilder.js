@@ -1,6 +1,7 @@
 'use strict';
 
 const validator = require('validator');
+var ValidationError = require("./../../_classes/ValidationError");
 
 /**
  * Responsible for turning parameters passeed are turned in DynamoDb parameters by building 
@@ -79,39 +80,53 @@ module.exports = class ReplyQueryBuilder {
 		this._errors = errors;
 	}
 
-    /**
-     * Validates the parameters passed inside this.events object
-     * 
-     * @return {boolean} 
-     */
+	/**
+	 * Validates the parameters passed inside this.events object
+	 * 
+	 * @return {boolean} 
+	 */
 	validates() {
 
 		this._errors = []; // Reset the errors array before running thr logic
 
-    	if( this._criterion.hasOwnProperty( 'threadid' ) == false &&
-    		this._criterion.hasOwnProperty( 'userid' ) == false
-    	) {
+        if( this._criterion !== null && typeof this._criterion === 'object' ) {
 
-			this._errors.push( new Error( 'You must provide a threadid or userid parameter' ) );
-    	}
+    		if( this._criterion.hasOwnProperty( 'threadid' ) == false &&
+    			this._criterion.hasOwnProperty( 'userid' ) == false
+    		) {
 
-        if( this_criterion.hasOwnProperty( 'threadid' ) ) {
+    			this._errors.push( { "message": "You must provide a threadid or userid parameter" } );
+    		}
 
-            if ( validator.isAlphanumeric( this._criterion.threadid ) == false ) {
+    		if( this._criterion.hasOwnProperty( 'threadid' ) ) {
 
-                this._errors.push( new Error( 'Your threadid parameter must be an alphanumeric string' ) );
-            }
+    			if ( validator.isAlphanumeric( this._criterion.threadid ) == false ) {
+
+    				this._errors.push( { "message": "Your threadid parameter must be an alphanumeric string" } );
+    			}
+    		}
+
+    		if( this._criterion.hasOwnProperty('userid') ) {
+
+    			if ( validator.isNumeric( this._criterion.userid ) == false ) {
+
+    				this._errors.push( { "message": "Your userid parameter must be numeric" } );
+    			}
+    		}
         }
-        
-        if( this._criterion.hasOwnProperty('userid') ) {
+        else {
 
-            if ( validator.isNumeric( this._criterion.userid ) == false ) {
-
-                this._errors.push( new Error( 'Your userid parameter must be numeric' ) );
-            }
+            this._errors.push( { "message" : "You must supply a threadid or userid" } );
         }
+		    
+		if( this._errors.length ) {
+
+            throw new ValidationError( JSON.stringify( this._errors ) );
             
-        return this._errors.length > 0 ? 0 : 1;		
+            return;
+        }
+
+        return this;
 	}
 
     /**
@@ -162,7 +177,6 @@ module.exports = class ReplyQueryBuilder {
         if ( this._criterion.hasOwnProperty('threadid') && 
         	this._criterion.hasOwnProperty('createddatetime') ) 
         {
-
             this._parameters['ExclusiveStartKey'] = {
                 ThreadId: this._criterion.threadid,
                 DateTime: this._criterion.createddatetime
