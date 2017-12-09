@@ -43,7 +43,7 @@ module.exports.replyList = (event, context, callback) => {
             /** All successful. Create a valid response */
 
             /** @type {number} return the correct http status code */
-            let statusCode = data.length > 0 ? 204 : 200
+            let statusCode = data.length > 0 ? 200 : 204
             
             const response = {
                 statusCode: statusCode,
