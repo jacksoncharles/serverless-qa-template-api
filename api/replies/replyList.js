@@ -38,26 +38,19 @@ module.exports.replyList = (event, context, callback) => {
         dynamoDb.query( Query.parameters, function( error, data ) {
 
             /** Handle potential dynamoDb errors */
-            if (error) {
+            if (error) throw new DynamodbError(error);
 
-                console.log('***error***', error );
+            /** All successful. Create a valid response */
 
-                throw new DynamodbError(error);
-            }
-            else {
+            /** @type {number} return the correct http status code */
+            let statusCode = data.length > 0 ? 204 : 200
+            
+            const response = {
+                statusCode: statusCode,
+                body: JSON.stringify( data ),
+            };
 
-                /** All successful. Create a valid response */
-
-                /** @type {number} return the correct http status code */
-                let statusCode = data.length > 0 ? 204 : 200
-                
-                const response = {
-                    statusCode: statusCode,
-                    body: JSON.stringify( data ),
-                };
-
-                callback( null, response );
-            }
+            callback( null, response );
         });
     }
     catch( e ) {
