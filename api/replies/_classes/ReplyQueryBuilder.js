@@ -81,13 +81,13 @@ module.exports = class ReplyQueryBuilder {
 	}
 
 	/**
-	 * Validates the parameters passed inside this.events object
+	 * Validates the parameters passed inside this._criterion object
 	 * 
 	 * @return {boolean} 
 	 */
 	validates() {
 
-		this._errors = []; // Reset the errors array before running thr logic
+		this._errors = []; // Reset the errors array before running the validation logic
 
         if( this._criterion !== null && typeof this._criterion === 'object' ) {
 
@@ -122,8 +122,6 @@ module.exports = class ReplyQueryBuilder {
 		if( this._errors.length ) {
 
             throw new ValidationError( JSON.stringify( this._errors ) );
-            
-            return;
         }
 
         return this;
@@ -183,21 +181,11 @@ module.exports = class ReplyQueryBuilder {
             }
         }
 
-        return this;
-    }
-
-    /**
-     * Set a value for "Limit" with any value passed by the query string.
-     *
-     * @return void
-     */
-    buildLimit() {
-
         if ( this._criterion.hasOwnProperty('limit') ) {
 
             this._parameters['Limit'] = this._criterion.limit;
         }
 
         return this;
-    }	
+    }
 }

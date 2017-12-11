@@ -1,11 +1,10 @@
 'use strict';
 
-const AWS = require('aws-sdk');
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
-
 var ReplyQueryBuilder = require("./_classes/ReplyQueryBuilder");
 var ValidationError = require("./../_classes/ValidationError");
 var DynamodbError = require("./../_classes/DynamodbError");
+
+var Reply = require("./_models/Reply");
 
 /**
  * Handler for the lambda function.
@@ -31,53 +30,48 @@ module.exports.replyList = (event, context, callback) => {
         .validates()
         .buildThreadIndex()
         .buildUserIndex()
-        .buildPagination()
-        .buildLimit();
+        .buildPagination();
 
-        /** Run a dynamoDb query passing-in Query.parameters  */
-        dynamoDb.query( Query.parameters, function( error, data ) {
+        /** @type {model} Contains a list of items and optional pagination data  */
+        Reply.list( Query.parameters )
+        .then( ( replies ) => {
 
-            /** Handle potential dynamoDb errors */
-            if (error) throw new DynamodbError(error);
-
-            /** All successful. Create a valid response */
-
-            /** @type {number} return the correct http status code */
-            let statusCode = data.length > 0 ? 200 : 204
-            
             const response = {
-                statusCode: statusCode,
-                body: JSON.stringify( data ),
+                statusCode: ( replies.length > 0 ? 200 : 204 ),
+                body: replies
             };
 
-            callback( null, response );
-        });
-    }
-    catch( e ) {
+            return callback( null, response );            
+        })
+        .catch( ( error ) => {
 
-        if( e instanceof ValidationError ) {
-
-            callback(null, {
-                statusCode: 422,
-                body: JSON.stringify( Query.errors )
-            });
-
-        } else if ( e instanceof DynamodbError ) {
-
-            console.log('<<<Dynamodb Error>>>', e );
+            console.log('<<<Dynamodb Error>>>', error );
 
             callback(null, {
                 statusCode: 500,
-                body: JSON.stringify( e )
+                body: JSON.stringify( error )
+            });
+
+        });        
+    }
+    catch( error ) {
+
+        if( error instanceof ValidationError ) {
+
+            console.log('=== the error is ===', error );
+
+            callback(null, {
+                statusCode: 422,
+                body: error.message
             });
 
         } else {
 
-            console.log('<<<Unknown Error>>>', e );
+            console.log('<<<Unknown Error>>>', error );
 
             callback(null, {
                 statusCode: 500,
-                body: JSON.stringify( e )
+                body: JSON.stringify( error )
             });
 
         }
