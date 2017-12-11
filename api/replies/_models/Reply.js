@@ -1,12 +1,5 @@
 'use strict';
 
-const AWS = require('aws-sdk');
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
-
-var DynamodbError = require("./../../_classes/DynamodbError");
-
-const Table = 'Reply';
-
 /**
  * 
  * 
@@ -14,105 +7,30 @@ const Table = 'Reply';
  */
 module.exports = class Reply {
 
-	/**
-	 * Retrieve an array of replies according to the parameters passed
-	 * 
-	 * @return {array} Array of replies 
-	 */
-	static destory( id ) {
+	constructor() {		
 
-		return new Promise( function( resolve, reject ) {
+        this.validation = {
 
-		    /** @type {Object} Holds the parameters for the get request */
-		    const parameters = {
-
-		        TableName : Table,
-		        Key : {
-		            Id : id
-		        }
-		    }
-
-	        /** Run a dynamoDb get request passing-in our parameters  */
-	        return dynamoDb.delete( parameters, function( error, data ) {
-
-	            /** Handle potential dynamoDb errors */
-	            if ( error ) return reject( error );
-
-	            /** All successful. Create a valid response */
-	            return resolve( JSON.stringify( data ) );
-	        });	    
-
-	    })
-        .catch( function( error ) {
-
-        	console.log('<<<DynamodbError>>>', error );
-        	
-        	throw new DynamodbError( error );
-        });	    		
-	}
-
-	/**
-	 * Retrieve an array of replies according to the parameters passed
-	 * 
-	 * @return {array} Array of replies 
-	 */
-	static find( id ) {
-
-		return new Promise( function( resolve, reject ) {
-
-		    /** @type {Object} Holds the parameters for the get request */
-		    const parameters = {
-
-		        TableName : Table,
-		        Key : {
-		            Id : id
-		        }
-		    }
-
-	        /** Run a dynamoDb get request passing-in our parameters  */
-	        return dynamoDb.get( parameters, function( error, data ) {
-
-	            /** Handle potential dynamoDb errors */
-	            if ( error ) return reject( error );
-
-	            /** All successful. Create a valid response */
-	            return resolve( JSON.stringify( data ) );
-	        });	    
-
-	    })
-        .catch( function( error ) {
-
-        	console.log('<<<DynamodbError>>>', error );
-        	
-        	throw new DynamodbError( error );
-        });	    
-	}
-
-	/**
-	 * Retrieve an array of replies according to the parameters passed
-	 * 
-	 * @return {array} Array of replies 
-	 */
-	static list( parameters ) {
-
-		return new Promise( function( resolve, reject ) {
-
-	        /** Run a dynamoDb query passing-in Query.parameters  */
-	        return dynamoDb.query( parameters, function( error, data ) {
-
-	            /** Handle potential dynamoDb errors */
-	            if ( error ) return reject( error );
-
-	            /** All successful. Create a valid response */
-	            return resolve( JSON.stringify( data ) );
-	        });	    
-
-	    })
-        .catch( function( error ) {
-
-        	console.log('<<<DynamodbError>>>', error );
-
-        	throw new DynamodbError( error );
-        });	    
+	            ThreadId: {
+	                type: 'string',
+	                required: true,
+	                message: 'threadid is required.'                
+	            },
+	            UserId: {
+	                type: 'number',
+	                required: true,
+	                message: 'userid is required.'                
+	            },
+	            Message: {
+	                type: 'string',
+	                required: true,
+	                message: 'message is required.'                
+	            },
+	            UserName: {
+	                type: 'string',
+	                required: true,
+	                message: 'username is required.'                
+	            }
+        }
 	}
 }

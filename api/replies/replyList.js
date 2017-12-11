@@ -2,10 +2,12 @@
 
 var ReplyQueryBuilder = require("./_classes/ReplyQueryBuilder");
 
-var ValidationError = require("./../_classes/ValidationError");
-var DynamodbError = require("./../_classes/DynamodbError");
-
+var ValidationError = require("./../_errors/ValidationError");
+var DynamodbError = require("./../_errors/DynamodbError");
 var Reply = require("./_models/Reply");
+
+
+var DynamodbService = require("./../_services/DynamodbService");
 
 /**
  * Handler for the lambda function.
@@ -34,7 +36,7 @@ module.exports.replyList = (event, context, callback) => {
         .buildPagination();
 
         /** @type {model} Contains a list of items and optional pagination data  */
-        Reply.list( Query.parameters )
+        DynamodbService.list( Query.parameters )
         .then( ( replies ) => {
 
             const response = {
@@ -53,9 +55,8 @@ module.exports.replyList = (event, context, callback) => {
 
         });
     }
-    catch( error ) { 
-
-        // All error handling performed here
+    catch( error ) { // Catch any errors thrown by the ReplyQueryBuilder class
+        
         if( error instanceof ValidationError ) {
 
             callback(null, {

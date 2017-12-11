@@ -1,7 +1,7 @@
 'use strict';
 
 const validator = require('validator');
-var ValidationError = require("./../../_classes/ValidationError");
+var ValidationError = require("./../../_errors/ValidationError");
 
 /**
  * Responsible for turning parameters passeed are turned in DynamoDb parameters by building 
@@ -12,12 +12,8 @@ var ValidationError = require("./../../_classes/ValidationError");
 module.exports = class ReplyQueryBuilder {
 
 	constructor( criterion ) {
-
-		/**
-		 * Key/value pairs used to build our DynamoDb parameters.
-		 *
-		 * @type {object}
-		 */
+        
+        /** @type {Object} Key/value pairs used to build our DynamoDb parameters. */
 		this._criterion = criterion;
 
 		/**
