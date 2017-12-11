@@ -287,9 +287,6 @@ resources:
           -
             AttributeName: "Id"
             KeyType: "HASH"
-          -
-            AttributeName: "CreatedDateTime"
-            KeyType: "RANGE"
         GlobalSecondaryIndexes:
           -
             IndexName: ThreadIndex

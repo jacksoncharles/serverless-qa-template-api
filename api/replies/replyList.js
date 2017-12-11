@@ -1,6 +1,7 @@
 'use strict';
 
 var ReplyQueryBuilder = require("./_classes/ReplyQueryBuilder");
+
 var ValidationError = require("./../_classes/ValidationError");
 var DynamodbError = require("./../_classes/DynamodbError");
 

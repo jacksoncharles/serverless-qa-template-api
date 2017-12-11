@@ -1,7 +1,8 @@
 'use strict';
 
-const AWS = require('aws-sdk'); // eslint-disable-line import/no-extraneous-dependencies
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+var DynamodbError = require("./../_classes/DynamodbError");
+
+var Reply = require("./_models/Reply");
 
 /**
  * Handler for the lambda function.
@@ -14,44 +15,24 @@ const dynamoDb = new AWS.DynamoDB.DocumentClient();
  */
 module.exports.replyGet = (event, context, callback) => {
 
-    /**
-     * The parameters needed by DynamoDb
-     * 
-     * @type {Object}
-     */
-    const parameters = {
+    Reply.find( event.pathParameters.id )
+    .then( ( reply ) => {
 
-        TableName: 'Reply',
-        Key: {
-            Id: event.pathParameters.id
+        const response = {
+            statusCode: 200,
+            body: reply
         }
-    }
 
-    // Run the query to retrieve the Item from permanent storage
-    dynamoDb.get(Query.parameters, (error, result) => {
-        
-        // Handle any potential DynamoDb errors
-        if (error) {
+        return callback( null, response );
+    })
+    .catch( function( error ) {
 
-            console.error('=== error ===', error);
+        console.log('<<<Error>>>', error );
 
-            callback(null, {
-                statusCode: error.statusCode || 501,
-                headers: { 'Content-Type': 'text/plain' },
-                body: 'Couldn\'t fetch the post item.',
-            });
+        callback(null, {
+            statusCode: 500,
+            body: JSON.stringify( { message: error.message } )
+        });
 
-        }
-        else {
-
-            // create a response
-            const response = {
-
-                statusCode: 200,
-                body: JSON.stringify(result.Item),
-            };
-
-            callback(null, response);
-        }
     });
 };
