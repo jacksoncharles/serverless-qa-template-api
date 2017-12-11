@@ -41,24 +41,21 @@ module.exports.replyList = (event, context, callback) => {
                 body: replies
             };
 
-            return callback( null, response );            
+            return callback( null, response );
         })
-        .catch( ( error ) => {
-
-            console.log('<<<Dynamodb Error>>>', error );
+        .catch( function( error ) {
 
             callback(null, {
                 statusCode: 500,
-                body: JSON.stringify( error )
+                body: JSON.stringify( { message: error.message } )
             });
 
-        });        
+        });
     }
-    catch( error ) {
+    catch( error ) { 
 
+        // All error handling performed here
         if( error instanceof ValidationError ) {
-
-            console.log('=== the error is ===', error );
 
             callback(null, {
                 statusCode: 422,
@@ -73,7 +70,6 @@ module.exports.replyList = (event, context, callback) => {
                 statusCode: 500,
                 body: JSON.stringify( error )
             });
-
         }
     }
 };

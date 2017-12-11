@@ -29,7 +29,14 @@ module.exports = class Reply {
 
 	            /** All successful. Create a valid response */
 	            return resolve( JSON.stringify( data ) );
-	        });
-	    });
+	        });	    
+
+	    })
+        .catch( function( error ) {
+
+        	console.log('<<<DynamodbError>>>', error );
+        	
+        	throw new DynamodbError( error );
+        });	    
 	}
 }
