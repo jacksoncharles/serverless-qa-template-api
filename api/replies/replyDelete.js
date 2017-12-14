@@ -17,16 +17,7 @@ var Dynamodb = require("./../_services/DynamodbService");
  */
 module.exports.replyDelete = (event, context, callback) => {
 
-    /** @type {Object} Holds the parameters for the get request */
-    const parameters = {
-
-        TableName : process.env.DYNAMODB_REPLY_TABLE,
-        Key : {
-            Id : event.pathParameters.id
-        }
-    }
-
-    Dynamodb.destroy( parameters )
+    Reply.destroy( event.pathParameters.id )
     .then( ( reply ) => {
 
         const response = {

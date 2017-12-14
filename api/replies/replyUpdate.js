@@ -1,7 +1,7 @@
 'use strict';
 
-const AWS = require('aws-sdk'); // eslint-disable-line import/no-extraneous-dependencies
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+var Reply = require("./_models/Reply");
+var ValidationError = require("./../_errors/ValidationError");
 
 /**
  * Handler for the lambda function.
@@ -14,151 +14,47 @@ const dynamoDb = new AWS.DynamoDB.DocumentClient();
  */
 module.exports.replyUpdate = (event, context, callback) => {
 
-    var QueryBuilder = function( event ) {
+    let reply = new Reply( this.event.queryStringParameters );
 
-        /**
-         * Capture the event object passed as a parameter;
-         * 
-         * @type event
-         */
-        this.event = event;
+    reply
+    .validate()
+    .save()
+    .then( ( reply ) => {
 
-        /**
-         * Used to build the object being saved to permanent storage. The value of "Item" will 
-         * be populated with user passed parameters
-         * 
-         * @todo : Change TableName to value of process.env.DYNAMODB_REPLY_TABLE
-         * 
-         * @type Object
-         */
-        this.parameters = {
-            TableName: 'Reply'
-            Item: {}
+        const response = {
+            statusCode: 200,
+            body: reply
         }
 
-        /**
-         * Holds the schema for validating the parameters passed with the request. Anything failing
-         * validation will be stored inside this.errors
-         * 
-         * @type {Object}
-         */
-        this.validator = schema({
+        return callback( null, response );
+    })
+    .catch( function( error ) {
 
-            ThreadId: {
-                type: 'string',
-                required: true,
-                message: 'threadid is required.'                
-            },
-            UserId: {
-                type: 'number',
-                required: true,
-                message: 'userid is required.'                
-            },
-            Message: {
-                type: 'string',
-                required: true,
-                message: 'message is required.'                
-            },
-            UserName: {
-                type: 'string',
-                required: true,
-                message: 'username is required.'                
-            }
-        });
+        if( error instanceof ValidationError ) {
 
-        /**
-         * Used to hold any validation messages.
-         * 
-         * @type {Array}
-         */
-        this.errors = [];
+            callback(null, {
+                statusCode: 422,
+                body: error.message
+            });
+        }
+        else if( error instanceof DynamodbError ) {
 
-    }
+            console.log('<<<Dynamodb Error>>>', error );
 
-    /**
-     * Populates the "item" object prior to saving
-     * 
-     * @return {this}
-     */
-    QueryBuilder.prototype.hydrate = function() {
+            callback(null, {
+                statusCode: 500,
+                body: JSON.stringify( error )
+            });
 
-        const timestamp = new Date().getTime();
+        } 
+        else {
 
-        this.parameters.Item = {
-            Id: uuid.v1(),
-            ThreadId: this.event.queryStringParameters.threadid,
-            UserId: this.event.queryStringParameters.userid,
-            Message: this.event.queryStringParameters.message,
-            UserName: this.event.queryStringParameters.username,
-            UpdatedDateTime: timestamp
-        };
+            console.log('<<<Unknown Error>>>', error );
 
-        return this;
-    }
-
-    /**
-     * Validates the data passed in the event object
-     * 
-     * @return {this}
-     */
-    QueryBuilder.prototype.validates = function() {
-
-        this.errors = [];
-
-        /*
-        if ( this.event.queryStringParameters.hasOwnProperty('threadid') == false && typeof this.event.queryStringParameters.threadid !== 'string' ) this.errors.push('threadid missing or invalid');
-        if ( this.event.queryStringParameters.hasOwnProperty('userid') == false && typeof this.event.queryStringParameters.userid !== 'string' ) this.errors.push('userid missing or invalid');
-        if ( this.event.queryStringParameters.hasOwnProperty('message') == false && typeof this.event.queryStringParameters.message !== 'string' ) this.errors.push('message missing or invalid');
-        if ( this.event.queryStringParameters.hasOwnProperty('username') == false && typeof this.event.queryStringParameters.username !== 'string' ) this.errors.push('username missing or invalid');
-        */
-        // Validate the query parameters
-        this.errors = this.validator.validate( this.event.queryStringParameters );
-
-        return this.errors.length ? 0 : 1;
-    }
-
-    /**
-     * Instantiate an instance of Query
-     * 
-     * @type {QueryBuilder}
-     */
-    var Query = new QueryBuilder( event );
-
-    // Check to see if the parameters passed in the request validate.
-    if ( Query.validates() == false ) {
-
-        // Handle validation errors
-        callback(null, {
-            statusCode: 422,
-            body: JSON.stringify({
-                message: Query.errors
-            })
-        })
-    }
-    else {
-
-        // Update the post in the database
-        dynamoDb.update( Query.hydrate().parameters, (error, result) => {
-        
-            // Handle any potential DynamoDb errors
-            if (error) {
-
-                console.error('=== error ===', error);
-                
-                callback(null, {
-                    statusCode: error.statusCode || 501,
-                    headers: { 'Content-Type': 'text/plain' },
-                    body: 'Couldn\'t fetch the post item.',
-                });
-                return;
-            }
-
-            // create a response
-            const response = {
-                statusCode: 200,
-                body: JSON.stringify(result.Attributes),
-            };
-            callback(null, response);
-        });
-    }
+            callback(null, {
+                statusCode: 500,
+                body: JSON.stringify( error )
+            });
+        }
+    });
 };

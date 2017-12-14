@@ -1,9 +1,6 @@
 'use strict';
 
-var DynamodbError = require("./../_errors/DynamodbError");
-
 var Reply = require("./_models/Reply");
-var Dynamodb = require("./../_services/DynamodbService");
 
 /**
  * Handler for the lambda function.
@@ -16,16 +13,7 @@ var Dynamodb = require("./../_services/DynamodbService");
  */
 module.exports.replyGet = (event, context, callback) => {
 
-    /** @type {Object} Holds the parameters for the get request */
-    const parameters = {
-
-        TableName : process.env.DYNAMODB_REPLY_TABLE,
-        Key : {
-            Id : event.pathParameters.id
-        }
-    }
-
-    Dynamodb.find( parameters )
+    Reply.find( event.pathParameters.id )
     .then( ( reply ) => {
 
         const response = {

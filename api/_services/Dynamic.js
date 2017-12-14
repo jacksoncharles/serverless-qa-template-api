@@ -4,20 +4,75 @@ const AWS = require('aws-sdk');
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 var DynamodbError = require('./../_errors/DynamodbError');
+var ValidationError = require('./../_errors/ValidationError');
 
 /**
- * CRUD service for DynamoDb.
+ * Wrapper for DynamoDb with basic CRUD functionality and a validation method
  * 
  * @type {class}
  */
-module.exports = class DynamodbService {
+module.exports = class Dynamic {
+
+	/**
+	 * Save the current instance to permanent storage creating a new record or updating an existing record
+	 * 
+	 * @return {Promise}
+	 */
+	save() {
+
+		return new Promise( function( resolve, reject ) {
+
+	        // Save to permanent storage
+			return dynamoDb.delete( this.properties(), function( error, data ) {
+
+	            // create a response
+	            const response = {
+
+	                statusCode: 200,
+	                body: JSON.stringify( data )
+	            };
+
+	            callback (null, response );
+	        });
+		})
+        .catch( function( error ) {
+
+        	console.log('<<<DynamodbError>>>', error );
+        	
+        	throw new DynamodbError( error );
+        });
+	}
+
+	/**
+	 * Validates the rules defined in this.validation_rules and throws an error
+	 * else returns {this}
+	 * 
+	 * @return {this}
+	 */
+	validate() {
+
+		let errors = this.validator.validate( Object.keys( this ) );
+
+		throw new ValidationError( errors );
+
+		return this;
+	}
 
 	/**
 	 * Retrieve an array of replies according to the parameters passed
 	 * 
 	 * @return {Array} Array of replies.
 	 */
-	static destroy( parameters ) {
+	static destroy( id : number ) {
+
+	    /** @type {Object} Holds the parameters for the get request */
+	    const parameters = {
+
+	        TableName : process.env.DYNAMODB_REPLY_TABLE,
+	        Key : {
+	            Id : id
+	        }
+	    }
 
 		return new Promise( function( resolve, reject ) {
 
@@ -45,7 +100,16 @@ module.exports = class DynamodbService {
 	 * 
 	 * @return {array} Array of replies 
 	 */
-	static find( parameters ) {
+	static find( id ) {
+
+	    /** @type {Object} Holds the parameters for the get request */
+	    const parameters = {
+
+	        TableName : process.env.DYNAMODB_REPLY_TABLE,
+	        Key : {
+	            Id : id
+	        }
+	    }
 
 		return new Promise( function( resolve, reject ) {
 
@@ -56,7 +120,7 @@ module.exports = class DynamodbService {
 	            if ( error ) return reject( error );
 
 	            /** All successful. Create a valid response */
-	            return resolve( JSON.stringify( data ) );
+	            return resolve( new this( data.Item ) );
 	        });	    
 
 	    })
