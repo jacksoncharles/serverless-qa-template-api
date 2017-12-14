@@ -63,7 +63,7 @@ module.exports = class Dynamic {
 	 * 
 	 * @return {Array} Array of replies.
 	 */
-	static destroy( id : number ) {
+	static destroy( id ) {
 
 	    /** @type {Object} Holds the parameters for the get request */
 	    const parameters = {
@@ -120,7 +120,7 @@ module.exports = class Dynamic {
 	            if ( error ) return reject( error );
 
 	            /** All successful. Create a valid response */
-	            return resolve( new this( data.Item ) );
+	            return resolve( new this.name( data.Item ) );
 	        });	    
 
 	    })

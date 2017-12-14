@@ -2,7 +2,7 @@
 
 const uuid = require('uuid');
 
-var schema = require('validate');
+var schema = require('validator');
 var Dynamic = require('./../../_services/Dynamic');
 
 /**
@@ -16,6 +16,8 @@ module.exports = class Reply extends Dynamic {
 
 	constructor( parameters = {} ) {		
 
+        this.name = 'Reply';
+        
         /** Grab all the parameters and assign as class properties */
         Object.assign(this, parameters );
 
