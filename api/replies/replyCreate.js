@@ -2,7 +2,7 @@
 
 var Reply = require("./_classes/Reply");
 
-var CustomErrors = require("./../_errors/CustomErrors");
+var CustomErrors = require("./../_classes/CustomErrors");
 var ValidationError = CustomErrors.ValidationError;
 
 /**

@@ -1,10 +1,12 @@
 'use strict';
 
-var DynamodbError = require("./../_errors/DynamodbError");
+var CustomErrors = require("./../../_classes/CustomErrors");
+var ValidationError = CustomErrors.ValidationError;
+
 
 var Reply = require("./_models/Reply");
 
-var Dynamodb = require("./../_services/DynamodbService");
+var Dynamodb = require("./../_classes/DynamodbService");
 
 /**
  * Handler for the lambda function.

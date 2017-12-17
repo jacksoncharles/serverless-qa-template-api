@@ -1,6 +1,6 @@
 'use strict';
 
-var Reply = require("./_models/Reply");
+var Reply = require("./_classes/Reply");
 
 var ReplyQueryBuilder = require("./_classes/ReplyQueryBuilder");
 

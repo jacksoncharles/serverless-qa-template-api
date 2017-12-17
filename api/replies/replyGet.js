@@ -1,8 +1,6 @@
 'use strict';
 
-var Reply = require("./_models/Reply");
-
-var DynamodbService = require("./../_services/DynamodbService");
+var Reply = require("./_classes/Reply");
 
 /**
  * Handler for the lambda function.
