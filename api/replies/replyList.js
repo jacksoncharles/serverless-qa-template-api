@@ -1,11 +1,11 @@
 'use strict';
 
-var ReplyQueryBuilder = require("./_classes/ReplyQueryBuilder");
-
-var ValidationError = require("./../_errors/ValidationError");
-var DynamodbError = require("./../_errors/DynamodbError");
 var Reply = require("./_models/Reply");
 
+var ReplyQueryBuilder = require("./_classes/ReplyQueryBuilder");
+
+var CustomErrors = require("./../_errors/CustomErrors");
+var DynamodbError = CustomErrors.DynamodbError;
 
 var DynamodbService = require("./../_services/DynamodbService");
 
@@ -36,7 +36,7 @@ module.exports.replyList = (event, context, callback) => {
         .buildPagination();
 
         /** @type {model} Contains a list of items and optional pagination data  */
-        DynamodbService.list( Query.parameters )
+        Reply.list( Query.parameters )
         .then( ( replies ) => {
 
             const response = {
@@ -44,7 +44,7 @@ module.exports.replyList = (event, context, callback) => {
                 body: replies
             };
 
-            return callback( null, response );
+            callback( null, response );
         })
         .catch( function( error ) {
 

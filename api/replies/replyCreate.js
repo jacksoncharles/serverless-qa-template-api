@@ -1,7 +1,9 @@
 'use strict';
 
-var Reply = require("./_models/Reply");
-var ValidationError = require("./../_errors/ValidationError");
+var Reply = require("./_classes/Reply");
+
+var CustomErrors = require("./../_errors/CustomErrors");
+var ValidationError = CustomErrors.ValidationError;
 
 /**
  * Handler for the lambda function.

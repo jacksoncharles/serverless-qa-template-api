@@ -2,6 +2,8 @@
 
 var Reply = require("./_models/Reply");
 
+var DynamodbService = require("./../_services/DynamodbService");
+
 /**
  * Handler for the lambda function.
  * 
@@ -11,17 +13,22 @@ var Reply = require("./_models/Reply");
  * 
  * @return JSON    JSON encoded response.
  */
-module.exports.replyGet = (event, context, callback) => {
+module.exports.replyGet = ( event, context, callback ) => {
 
     Reply.find( event.pathParameters.id )
     .then( ( reply ) => {
 
-        const response = {
-            statusCode: 200,
+        let statusCode = 200;
+        if( Object.keys( reply ).length === 0 ) statusCode = 404; // Catch a 404
+
+        let response = {
+            statusCode: statusCode, // Will be used by the API gateway in the response
             body: reply
         }
 
-        return callback( null, response );
+        console.log( 'response', response );
+
+        callback( null, response );
     })
     .catch( function( error ) {
 
@@ -29,7 +36,7 @@ module.exports.replyGet = (event, context, callback) => {
 
         callback(null, {
             statusCode: 500,
-            body: JSON.stringify( { message: error.message } )
+            body: error
         });
 
     });
