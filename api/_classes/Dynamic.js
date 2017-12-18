@@ -3,7 +3,7 @@
 const AWS = require('aws-sdk');
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
-var CustomErrors = require("./../_errors/CustomErrors");
+var CustomErrors = require("./CustomErrors");
 var DynamodbError = CustomErrors.DynamodbError;
 var ValidationError = CustomErrors.ValidationError;
 var NotFoundError = CustomErrors.NotFoundError;
@@ -15,6 +15,12 @@ var NotFoundError = CustomErrors.NotFoundError;
  */
 module.exports = class Dynamic {
 
+	constructor( parameters ) {
+
+		/** Grab all the parameters and assign as class properties */
+		Object.assign(this, parameters );
+	}
+	
 	/**
 	 * Save the current instance to permanent storage creating a new record or updating an existing record
 	 * 
@@ -123,11 +129,11 @@ module.exports = class Dynamic {
 	            /** Handle potential dynamoDb errors */
 	            if ( error ) return reject( error );
 
-	            let newInstance = self.model( data );
-	            //console.log( '=== M ===', m );
+	            /** @type {Object} Create a new instance of self and populate with the data */
+	            let modelInstance = self.model( data.Item );
 
 	            /** All successful. Create a valid response */
-	            return resolve( JSON.stringify( data ) );
+	            return resolve( modelInstance );
 	        });	    
 
 	    })
@@ -146,6 +152,8 @@ module.exports = class Dynamic {
 	 */
 	static list( parameters ) {
 
+		var self = this;
+
 		return new Promise( function( resolve, reject ) {
 
 	        /** Run a dynamoDb query passing-in Query.parameters  */
@@ -154,8 +162,17 @@ module.exports = class Dynamic {
 	            /** Handle potential dynamoDb errors */
 	            if ( error ) return reject( error );
 
+	            let items = [];
+
+	            for ( let item of data.Items ) {
+
+	                items.push( self.model( item ) );
+	            }
+
+	            data['Items'] = items;
+
 	            /** All successful. Create a valid response */
-	            return resolve( JSON.stringify( data ) );
+	            return resolve( data );
 	        });	    
 
 	    })

@@ -16,15 +16,10 @@ module.exports.replyGet = ( event, context, callback ) => {
     Reply.find( event.pathParameters.id )
     .then( ( reply ) => {
 
-        let statusCode = 200;
-        if( Object.keys( reply ).length === 0 ) statusCode = 404; // Catch a 404
-
         let response = {
-            statusCode: statusCode, // Will be used by the API gateway in the response
-            body: reply
+            statusCode: Object.keys( reply ).length === 0 ? 404 : 200, 
+            body: JSON.stringify( reply )
         }
-
-        console.log( 'response', response );
 
         callback( null, response );
     })

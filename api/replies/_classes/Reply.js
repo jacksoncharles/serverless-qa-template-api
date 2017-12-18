@@ -10,45 +10,20 @@ var Dynamic = require('./../../_classes/Dynamic');
  */
 module.exports = class Reply extends Dynamic {
 
-	constructor( parameters = {} ) {		
-        
-        /** Grab all the parameters and assign as class properties */
-        Object.assign(this, parameters );
+    constructor( parameters ) {
 
-        /** @type {Object} Create the validation rules */
-        /*
-		this.validation_rules = {
-	        Id: {
-                type: 'string',
-                required: false,
-                message: 'id must be a string'
-            },
-	        ThreadId: {
-                type: 'string',
-                required: true,
-                message: 'threadid is required'
-            },
-            UserId: {
-                type: 'number',
-                required: true,
-                message: 'userid is required'
-            },
-            Message: {
-                type: 'string',
-                required: true,
-                message: 'message is required'
-            },
-            UserName: {
-                type: 'string',
-                required: true,
-                message: 'username is required'
-            }
-        }
-        */
-	}
+        super( parameters );
+    }
 
+    /**
+     * Return a new instance of this
+     * 
+     * @param  {Object} parameters - Properties to be assigned to the newly created object
+     * 
+     * @return {Object} New instance of the Reply object
+     */
     static model( parameters ) {
 
-        return new this;
+        return new Reply( parameters );
     }
 }

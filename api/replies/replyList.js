@@ -4,10 +4,9 @@ var Reply = require("./_classes/Reply");
 
 var ReplyQueryBuilder = require("./_classes/ReplyQueryBuilder");
 
-var CustomErrors = require("./../_errors/CustomErrors");
+var CustomErrors = require("./../_classes/CustomErrors");
 var DynamodbError = CustomErrors.DynamodbError;
-
-var DynamodbService = require("./../_services/DynamodbService");
+var ValidationError = CustomErrors.ValidationError;
 
 /**
  * Handler for the lambda function.
@@ -40,8 +39,8 @@ module.exports.replyList = (event, context, callback) => {
         .then( ( replies ) => {
 
             const response = {
-                statusCode: ( replies.length > 0 ? 200 : 204 ),
-                body: replies
+                statusCode: replies.Items.length > 0 ? 200 : 204,
+                body: JSON.stringify( replies )
             };
 
             callback( null, response );
