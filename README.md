@@ -2,7 +2,7 @@
 
 A template for a forum microservice.
 
-A robust solution with common functionality including pagination and global secondary indexes for retrieiving by user, thread or primayr key. And is loosely inspired by the [AWS Example Forum](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SampleData.CreateTables.html).
+A robust solution with common functionality including pagination and global secondary indexes for retrieiving by user, thread or unique key. And is loosely inspired by the [AWS Example Forum](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SampleData.CreateTables.html).
 
 Designed to be implemented as part of a distributed solution.
 
