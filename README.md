@@ -1,6 +1,7 @@
 # Forum Microservice
 
-A microservice template for a Q&A application such as comments functionality or discussion forum.
+A microservice template for a Q&A application such as comments functionality or discussion forum deployed using 
+the [Serverless Framework](http://serverless.com).
 
 A robust solution with common functionality including pagination and global secondary indexes for retrieiving by user, thread or unique key. It is loosely inspired by the [AWS Example Forum](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SampleData.CreateTables.html) and designed as part of a distributed solution.
 
@@ -17,22 +18,27 @@ Deploying the forum microservice will provision and create the following resourc
 2. 10 * Lambda functions with associated Cloud Watch logs.
 3. 2 * DynamoDB tables called Thread and Reply.
 
-To deploy from your desktop you must have an existing AWS account with command line access. Firstly, ensure you have installed the [Serverless Framework](http://serverless.com).
+To deploy from your desktop you must have an existing AWS account with command line access. 
+
+Firstly, install the [Serverless Framework](http://serverless.com).
 
 ```
     npm install serverless -g
 ```
 
-Then, from the project root 
+Secondly, install the [Serverless Framework](http://serverless.com) dependencies.
 
 ```
     npm install
 ```
 
+Next, install your microservice API dependencies.
 
 ```
     ./api/npm install
 ```
+
+Lasty, deploy your microservice API.
 
 ```
     sls deploy
