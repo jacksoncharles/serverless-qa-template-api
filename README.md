@@ -1,10 +1,10 @@
 # Forum Microservice
 
-A possible starter-for-10 forum microservice.
+A template for a forum microservice.
 
-Includes basic functionality such as pagination and global secondary indexes for retrieiving by user or thread. And is loosely inspired by the [AWS Example Forum](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SampleData.CreateTables.html).
+A robust solution with common functionality including pagination and global secondary indexes for retrieiving by user, thread or primayr key. And is loosely inspired by the [AWS Example Forum](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SampleData.CreateTables.html).
 
-Can be built and implemented as part of a distributed solution.
+Designed to be implemented as part of a distributed solution.
 
 ## Technology Stack
 1. [AWS Lambda](https://aws.amazon.com/lambda/)
@@ -15,9 +15,9 @@ Can be built and implemented as part of a distributed solution.
 ## Installation & Deployment 
 Deploying the forum microservice will provision and create the following resources.
 
-1. API Gateway entitled "forum-microservice" with 10 endpoints.
+1. API Gateway entitled forum-microservice with 10 endpoints.
 2. 10 * Lambda functions with associated Cloud Watch logs.
-3. 2 * DynamoDB tables.
+3. 2 * DynamoDB tables called Thread and Reply.
 
 To deploy from your desktop you must have an existing AWS account with command line access. Firstly, ensure you have installed the [Serverless Framework](http://serverless.com).
 
@@ -25,7 +25,16 @@ To deploy from your desktop you must have an existing AWS account with command l
     npm install serverless -g
 ```
 
-Then, from the project root folder simply enter the following command to provision and deploy your sevice to AWS.
+Then, from the project root 
+
+```
+    npm install
+```
+
+
+```
+    ./api/npm install
+```
 
 ```
     sls deploy
