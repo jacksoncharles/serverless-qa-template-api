@@ -1,6 +1,6 @@
 # Forum Microservice
 
-A template for a forum microservice.
+A microservice template for a Q&A application such as comments functionality or discussion forum.
 
 A robust solution with common functionality including pagination and global secondary indexes for retrieiving by user, thread or unique key. It is loosely inspired by the [AWS Example Forum](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SampleData.CreateTables.html) and designed as part of a distributed solution.
 
