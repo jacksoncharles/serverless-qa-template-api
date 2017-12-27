@@ -1,4 +1,5 @@
 'use strict';
+
 const uuidv1 = require('uuid/v1');
 
 var Thread = require("./_classes/Thread");

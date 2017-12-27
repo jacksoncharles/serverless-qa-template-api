@@ -85,7 +85,7 @@ module.exports = class ThreadQueryBuilder {
 	 */
 	validates() {
 
-		this._errors = []; // Reset the errors array before running the validation logic
+		this._errors = []; // Empty the errors array before running the validation logic
 
         if( this._criterion !== null && typeof this._criterion === 'object' ) {
 

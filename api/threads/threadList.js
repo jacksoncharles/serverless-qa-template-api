@@ -1,9 +1,7 @@
 'use strict';
 
 var Thread = require("./_classes/Thread");
-
 var ThreadQueryBuilder = require("./_classes/ThreadQueryBuilder");
-
 var Errors = require("./../_classes/Errors");
 var DynamodbError = Errors.DynamodbError;
 var ValidationError = Errors.ValidationError;

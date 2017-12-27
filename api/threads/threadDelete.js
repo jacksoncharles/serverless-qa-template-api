@@ -2,10 +2,7 @@
 
 var Errors = require("./../../_classes/Errors");
 var ValidationError = Errors.ValidationError;
-
-
 var Thread = require("./_models/Thread");
-
 var Dynamodb = require("./../_classes/DynamodbService");
 
 /**
