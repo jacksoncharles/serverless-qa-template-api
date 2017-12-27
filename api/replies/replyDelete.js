@@ -1,7 +1,7 @@
 'use strict';
 
-var CustomErrors = require("./../../_classes/CustomErrors");
-var ValidationError = CustomErrors.ValidationError;
+var Errors = require("./../../_classes/Errors");
+var ValidationError = Errors.ValidationError;
 
 
 var Reply = require("./_models/Reply");

@@ -1,12 +1,12 @@
 'use strict';
 
 const AWS = require('aws-sdk');
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+const dynamodb = new AWS.DynamoDB.DocumentClient();
 
-var CustomErrors = require("./CustomErrors");
-var DynamodbError = CustomErrors.DynamodbError;
-var ValidationError = CustomErrors.ValidationError;
-var NotFoundError = CustomErrors.NotFoundError;
+var Errors = require("./Errors");
+var DynamodbError = Errors.DynamodbError;
+var ValidationError = Errors.ValidationError;
+var NotFoundError = Errors.NotFoundError;
 
 /**
  * Wrapper for DynamoDb with basic CRUD functionality and a validation method
@@ -20,7 +20,7 @@ module.exports = class Dynamic {
 		/** Grab all the parameters and assign as class properties */
 		Object.assign(this, parameters );
 	}
-	
+
 	/**
 	 * Save the current instance to permanent storage creating a new record or updating an existing record
 	 * 
@@ -28,19 +28,28 @@ module.exports = class Dynamic {
 	 */
 	save() {
 
+		var self = this;
+
 		return new Promise( function( resolve, reject ) {
 
+		    /** @type {Object} Holds the parameters for the get request */
+		    const parameters = {
+
+		        TableName : process.env.DYNAMODB_REPLY_TABLE,
+		        Item : self.properties()
+		    }
+
 	        // Save to permanent storage
-			return dynamoDb.delete( this.properties(), function( error, data ) {
+			return dynamodb.put( parameters, function( error, data ) {
 
-	            // create a response
-	            const response = {
+				// Handle DynamoDb errors
+				if( error ) return reject( error );
 
-	                statusCode: 200,
-	                body: JSON.stringify( data )
-	            };
+	            /** @type {Object} Create a new instance of self and populate with the data */
+	            let modelInstance = self.constructor.model( parameters.Item );
 
-	            callback (null, response );
+	            /** All successful. Create a valid response */
+	            return resolve( modelInstance );
 	        });
 		})
         .catch( function( error ) {
@@ -49,58 +58,6 @@ module.exports = class Dynamic {
         	
         	throw new DynamodbError( error );
         });
-	}
-
-	/**
-	 * Validates the rules defined in this.validation_rules and throws an error
-	 * else returns {this}
-	 * 
-	 * @return {this}
-	 */
-	validate() {
-
-		let errors = this.validator.validate( Object.keys( this ) );
-
-		throw new ValidationError( errors );
-
-		return this;
-	}
-
-	/**
-	 * Retrieve an array of replies according to the parameters passed
-	 * 
-	 * @return {Array} Array of replies.
-	 */
-	static destroy( id ) {
-
-	    /** @type {Object} Holds the parameters for the get request */
-	    const parameters = {
-
-	        TableName : process.env.DYNAMODB_REPLY_TABLE,
-	        Key : {
-	            Id : id
-	        }
-	    }
-
-		return new Promise( function( resolve, reject ) {
-
-	        /** Run a dynamoDb get request passing-in our parameters  */
-	        return dynamoDb.delete( parameters, function( error, data ) {
-
-	            /** Handle potential dynamoDb errors */
-	            if ( error ) return reject( error );
-
-	            /** All successful. Create a valid response */
-	            return resolve( JSON.stringify( data ) );
-	        });	    
-
-	    })
-        .catch( function( error ) {
-
-        	console.log('<<<DynamodbError>>>', error );
-        	
-        	throw new DynamodbError( error );
-        });	    		
 	}
 
 	/**
@@ -123,10 +80,10 @@ module.exports = class Dynamic {
 
 		return new Promise( function( resolve, reject ) {
 
-	        /** Run a dynamoDb get request passing-in our parameters  */
-	        return dynamoDb.get( parameters, function( error, data ) {
+	        /** Run a dynamodb get request passing-in our parameters  */
+	        return dynamodb.get( parameters, function( error, data ) {
 
-	            /** Handle potential dynamoDb errors */
+	            /** Handle potential dynamodb errors */
 	            if ( error ) return reject( error );
 
 	            /** @type {Object} Create a new instance of self and populate with the data */
@@ -137,7 +94,7 @@ module.exports = class Dynamic {
 	        });	    
 
 	    })
-        .catch( function( error ) { // Capture a dynamoDb rejection
+        .catch( function( error ) { // Capture a dynamodb rejection
 
         	console.log('<<<DynamodbError>>>', error );
         	
@@ -156,10 +113,10 @@ module.exports = class Dynamic {
 
 		return new Promise( function( resolve, reject ) {
 
-	        /** Run a dynamoDb query passing-in Query.parameters  */
-	        return dynamoDb.query( parameters, function( error, data ) {
+	        /** Run a dynamodb query passing-in Query.parameters  */
+	        return dynamodb.query( parameters, function( error, data ) {
 
-	            /** Handle potential dynamoDb errors */
+	            /** Handle potential dynamodb errors */
 	            if ( error ) return reject( error );
 
 	            let items = [];
@@ -183,4 +140,41 @@ module.exports = class Dynamic {
         	throw new DynamodbError( error );
         });	    
 	}
+
+	/**
+	 * Retrieve an array of replies according to the parameters passed
+	 * 
+	 * @return {Array} Array of replies.
+	 */
+	static destroy( id ) {
+
+	    /** @type {Object} Holds the parameters for the get request */
+	    const parameters = {
+
+	        TableName : process.env.DYNAMODB_REPLY_TABLE,
+	        Key : {
+	            Id : id
+	        }
+	    }
+
+		return new Promise( function( resolve, reject ) {
+
+	        /** Run a dynamodb get request passing-in our parameters  */
+	        return dynamodb.delete( parameters, function( error, data ) {
+
+	            /** Handle potential dynamodb errors */
+	            if ( error ) return reject( error );
+
+	            /** All successful. Create a valid response */
+	            return resolve( JSON.stringify( data ) );
+	        });	    
+
+	    })
+        .catch( function( error ) {
+
+        	console.log('<<<DynamodbError>>>', error );
+        	
+        	throw new DynamodbError( error );
+        });	    		
+	}	
 }

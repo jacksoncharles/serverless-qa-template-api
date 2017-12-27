@@ -4,9 +4,9 @@ var Reply = require("./_classes/Reply");
 
 var ReplyQueryBuilder = require("./_classes/ReplyQueryBuilder");
 
-var CustomErrors = require("./../_classes/CustomErrors");
-var DynamodbError = CustomErrors.DynamodbError;
-var ValidationError = CustomErrors.ValidationError;
+var Errors = require("./../_classes/Errors");
+var DynamodbError = Errors.DynamodbError;
+var ValidationError = Errors.ValidationError;
 
 /**
  * Handler for the lambda function.

@@ -3,7 +3,8 @@
 const AWS = require('aws-sdk');
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
-var DynamodbError = require('./../_errors/DynamodbError');
+var Errors = require("./Errors");
+var DynamodbError = Errors.DynamodbError;
 
 /**
  * CRUD service for DynamoDb.

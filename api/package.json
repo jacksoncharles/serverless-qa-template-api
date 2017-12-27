@@ -12,6 +12,7 @@
   "keywords": [],
   "devDependencies": {},
   "dependencies": {
-    "validator": "^9.1.2"
+    "validator": "^9.1.2",
+    "uuid": "^3.1.0"
   }
 }

@@ -2,8 +2,8 @@
 
 const validator = require('validator');
 
-var CustomErrors = require("./../../_classes/CustomErrors");
-var ValidationError = CustomErrors.ValidationError;
+var Errors = require("./../../_classes/Errors");
+var ValidationError = Errors.ValidationError;
 
 /**
  * Responsible for turning parameters passeed are turned in DynamoDb parameters by building 

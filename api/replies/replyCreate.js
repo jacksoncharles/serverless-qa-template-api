@@ -1,9 +1,9 @@
 'use strict';
+const uuidv1 = require('uuid/v1');
 
 var Reply = require("./_classes/Reply");
-
-var CustomErrors = require("./../_classes/CustomErrors");
-var ValidationError = CustomErrors.ValidationError;
+var Errors = require("./../_classes/Errors");
+var ValidationError = Errors.ValidationError;
 
 /**
  * Handler for the lambda function.
@@ -16,21 +16,35 @@ var ValidationError = CustomErrors.ValidationError;
  */
 module.exports.replyCreate = (event, context, callback) => {
 
-    let reply = new Reply( this.event.queryStringParameters );
+    try {
 
-    reply
-    .validate()
-    .save()
-    .then( ( data ) => {
+        let parameters = JSON.parse( event.body );
+        parameters['Id']= uuidv1();
 
-        const response = {
-            statusCode: 200,
-            body: data
-        }
+        let reply = new Reply( parameters );
 
-        return callback( null, response );
-    })
-    .catch( function( error ) {
+        reply
+        .validate()
+        .save()
+        .then( ( data ) => {
+
+            const response = {
+                statusCode: 200,
+                body: JSON.stringify( data )
+            }
+
+            return callback( null, response );
+        })
+        .catch( function( error ) {
+
+            callback(null, {
+                statusCode: 500,
+                body: JSON.stringify( { message: error.message } )
+            });
+
+        });
+
+    } catch( error ) {
 
         if( error instanceof ValidationError ) {
 
@@ -58,5 +72,5 @@ module.exports.replyCreate = (event, context, callback) => {
                 body: JSON.stringify( error )
             });
         }
-    });    
+    }
 };
