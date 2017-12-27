@@ -61,7 +61,7 @@ NOTE: Will automatically remove any Lambda functions, Cloud Watch logs and API G
 not remove DynamoDb tables; They must be deleted manually.
 
 ## Lambda Functions and EndPoints
-Will create X Lambda functions accessible via [API Gateway](https://aws.amazon.com/api-gateway/) configured endpoints.
+Will create 10 Lambda functions accessible via [API Gateway](https://aws.amazon.com/api-gateway/) configured endpoints.
 
 NAME | LAMBDA | URL | VERB | DESCRIPTION
 ---- | ------ | --- | ---- | -----------
