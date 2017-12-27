@@ -1,7 +1,6 @@
 'use strict';
 
-const AWS = require('aws-sdk'); // eslint-disable-line import/no-extraneous-dependencies
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+var Thread = require("./_classes/Thread");
 
 /**
  * Handler for the lambda function.
@@ -12,46 +11,26 @@ const dynamoDb = new AWS.DynamoDB.DocumentClient();
  * 
  * @return JSON    JSON encoded response.
  */
-module.exports.threadGet = (event, context, callback) => {
+module.exports.threadGet = ( event, context, callback ) => {
 
-    /**
-     * The parameters needed by DynamoDb
-     * 
-     * @type {Object}
-     */
-    const parameters = {
+    Thread.find( event.pathParameters.id )
+    .then( ( thread ) => {
 
-        TableName: 'Thread',
-        Key: {
-            Id: event.pathParameters.id
+        let response = {
+            statusCode: Object.keys( thread ).length === 0 ? 404 : 200, 
+            body: JSON.stringify( thread )
         }
-    }
 
-    // Run the query to retrieve the Item from permanent storage
-    dynamoDb.get(Query.parameters, (error, result) => {
-        
-        // Handle any potential DynamoDb errors
-        if (error) {
+        callback( null, response );
+    })
+    .catch( function( error ) {
 
-            console.error('=== error ===', error);
+        console.log('<<<Error>>>', error );
 
-            callback(null, {
-                statusCode: error.statusCode || 501,
-                headers: { 'Content-Type': 'text/plain' },
-                body: 'Couldn\'t fetch the post item.',
-            });
+        callback(null, {
+            statusCode: 500,
+            body: error
+        });
 
-        }
-        else {
-
-            // create a response
-            const response = {
-
-                statusCode: 200,
-                body: JSON.stringify(result.Item),
-            };
-
-            callback(null, response);
-        }
     });
 };

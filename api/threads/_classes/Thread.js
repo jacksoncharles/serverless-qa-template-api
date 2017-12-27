@@ -7,12 +7,12 @@ var ValidationError = Errors.ValidationError;
 var Dynamic = require('./../../_classes/Dynamic');
 
 /**
- * Reply class. Each instance maps to one document in permanent storage and extends the
+ * Thread class. Each instance maps to one document in permanent storage and extends the
  * Dynamic wrapper class.
  * 
  * @type {class}
  */
-module.exports = class Reply extends Dynamic {
+module.exports = class Thread extends Dynamic {
 
     constructor( parameters ) {
 
@@ -24,11 +24,11 @@ module.exports = class Reply extends Dynamic {
      * 
      * @param  {Object} parameters - Properties to be assigned to the newly created object
      * 
-     * @return {Object} New instance of the Reply object
+     * @return {Object} New instance of the Thread object
      */
     static model( parameters ) {
 
-        return new Reply( parameters );
+        return new Thread( parameters );
     }
 
     /**
@@ -40,9 +40,10 @@ module.exports = class Reply extends Dynamic {
 
         return {
             'Id': this.Id,
-            'ThreadId': this.ThreadId,
+            'ForumId': this.ForumId,
             'UserId': this.UserId,
-            'UserName': this.UserName,            
+            'UserName': this.UserName,
+            'Title': this.Title,
             'Message': this.Message,
             'CreatedDateTime': this.CreatedDateTime,
             'UpdatedDateTime': this.UpdatedDateTime
@@ -59,10 +60,11 @@ module.exports = class Reply extends Dynamic {
         let errors = [];
 
         if( typeof this.Id == 'undefined' || validator.isEmpty( this.Id ) ) errors.push({'Id': 'must provide a unique string for Id'});
-        if( typeof this.Message == 'undefined' ||  validator.isEmpty( this.Message ) ) errors.push({'Message': 'must provide a value for Message'});
-        if( typeof this.ThreadId == 'undefined' || validator.isEmpty( this.ThreadId ) ) errors.push({'ThreadId': 'must provide a value for ThreadId'});
+        if( typeof this.ForumId == 'undefined' || validator.isEmpty( this.ForumId ) ) errors.push({'ForumId': 'must provide a value for ForumId'});
         if( typeof this.UserId == 'undefined' || validator.isEmpty( this.UserId ) ) errors.push({'UserId': 'must provide a value for UserId'});
         if( typeof this.UserName == 'undefined' || validator.isEmpty( this.UserName ) ) errors.push({'UserName': 'must provide a value for UserName'});
+        if( typeof this.Title == 'undefined' ||  validator.isEmpty( this.Title ) ) errors.push({'Title': 'must provide a value for Title'});
+        if( typeof this.Message == 'undefined' ||  validator.isEmpty( this.Message ) ) errors.push({'Message': 'must provide a value for Message'});
         
         if( errors.length ) throw new ValidationError( JSON.stringify( errors )  );
 

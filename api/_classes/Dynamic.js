@@ -87,7 +87,7 @@ module.exports = class Dynamic {
 	            if ( error ) return reject( error );
 
 	            /** @type {Object} Create a new instance of self and populate with the data */
-	            let modelInstance = self.model( data.Item );
+	            let modelInstance = self.constructor.model( data.Item );
 
 	            /** All successful. Create a valid response */
 	            return resolve( modelInstance );
@@ -123,7 +123,7 @@ module.exports = class Dynamic {
 
 	            for ( let item of data.Items ) {
 
-	                items.push( self.model( item ) );
+	                items.push( self.constructor.model( item ) );
 	            }
 
 	            data['Items'] = items;

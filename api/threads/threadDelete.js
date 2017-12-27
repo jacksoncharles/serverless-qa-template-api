@@ -1,7 +1,12 @@
 'use strict';
 
-const AWS = require('aws-sdk'); // eslint-disable-line import/no-extraneous-dependencies
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+var Errors = require("./../../_classes/Errors");
+var ValidationError = Errors.ValidationError;
+
+
+var Thread = require("./_models/Thread");
+
+var Dynamodb = require("./../_classes/DynamodbService");
 
 /**
  * Handler for the lambda function.
@@ -13,43 +18,25 @@ const dynamoDb = new AWS.DynamoDB.DocumentClient();
  * @return JSON    JSON encoded response.
  */
 module.exports.threadDelete = (event, context, callback) => {
-  
-    /**
-     * The parameters used by DynamoDb
-     * 
-     * @type {Object}
-     */
-    const parameters = {
-        TableName: 'Thread',
-        Key: {
-            id: event.pathParameters.id,
+
+    Thread.destroy( event.pathParameters.id )
+    .then( ( thread ) => {
+
+        const response = {
+            statusCode: 204,
+            body: thread
         }
-    };
 
-    // Run the query to remove the item from permenent storage
-    dynamoDb.delete(parameters, (error) => {
+        return callback( null, response );
+    })
+    .catch( function( error ) {
 
-        // Handle any potential DynamoDb errors
-        if (error) {
+        console.log('<<<Error>>>', error );
 
-            console.error('=== error ===', error);
+        callback(null, {
+            statusCode: 500,
+            body: JSON.stringify( { message: error.message } )
+        });
 
-            callback(null, {
-                statusCode: error.statusCode || 501,
-                headers: { 'Content-Type': 'text/plain' },
-                body: 'Couldn\'t remove the post item.',
-            });
-
-        }
-        else {
-
-            // Create a successful response
-            const response = {
-              statusCode: 204,
-              body: JSON.stringify({}),
-            };
-
-            callback(null, response);
-        }
     });
 };

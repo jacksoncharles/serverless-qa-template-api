@@ -66,8 +66,8 @@ Will create X Lambda functions accessible via [API Gateway](https://aws.amazon.c
 NAME | LAMBDA | URL | VERB | DESCRIPTION
 ---- | ------ | --- | ---- | -----------
 CREATE | threadCreate | /threads | POST | Create a new item in permanent storage.
-LIST | | threadList | /threads | GET | Retrieve a paginated listing from permanent storage.
-GET | | threadGet | /threads/:id | GET | Retrieve a individual item using the ```threadid``` or ```userid``` passed in the query string.
+LIST | threadList | /threads | GET | Retrieve a paginated listing from permanent storage.
+GET | threadGet | /threads/:id | GET | Retrieve a individual item using the ```threadid``` or ```userid``` passed in the query string.
 UPDATE | threadUpdate| /threads/:id | PUT | Update details of a post by providing a full array of model data.
 DELETE | threadDelete | /threads/:id | DELETE | Remove an item from permanent storage.
 CREATE | replyCreate | /replies | POST | Create a new item in permanent storage.
