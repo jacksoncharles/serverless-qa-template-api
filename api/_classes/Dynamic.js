@@ -11,7 +11,7 @@ var NotFoundError = Errors.NotFoundError;
 /**
  * Wrapper for DynamoDb with basic CRUD functionality and a validation method
  * 
- * @type {class}
+ * @type {Class}
  */
 module.exports = class Dynamic {
 
