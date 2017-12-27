@@ -89,18 +89,18 @@ module.exports = class ThreadQueryBuilder {
 
         if( this._criterion !== null && typeof this._criterion === 'object' ) {
 
-    		if( this._criterion.hasOwnProperty( 'threadid' ) == false &&
+    		if( this._criterion.hasOwnProperty( 'forumid' ) == false &&
     			this._criterion.hasOwnProperty( 'userid' ) == false
     		) {
 
-    			this._errors.push( { "message": "You must provide a threadid or userid parameter" } );
+    			this._errors.push( { "message": "You must provide a forumid or userid parameter" } );
     		}
 
-    		if( this._criterion.hasOwnProperty( 'threadid' ) ) {
+    		if( this._criterion.hasOwnProperty( 'forumid' ) ) {
 
     			if ( validator.isAlphanumeric( this._criterion.threadid ) == false ) {
 
-    				this._errors.push( { "message": "Your threadid parameter must be an alphanumeric string" } );
+    				this._errors.push( { "message": "Your forumid parameter must be an alphanumeric string" } );
     			}
     		}
 
@@ -114,7 +114,7 @@ module.exports = class ThreadQueryBuilder {
         }
         else {
 
-            this._errors.push( { "message" : "You must supply a threadid or userid" } );
+            this._errors.push( { "message" : "You must supply a forumid or userid" } );
         }
 		    
 		if( this._errors.length ) {
@@ -126,18 +126,18 @@ module.exports = class ThreadQueryBuilder {
 	}
 
     /**
-     * If "threadid" has been passed inside this.event this method will build upon this.parameters object
+     * If "forumid" has been passed inside this.event this method will build upon this.parameters object
      *
      * @return this
      */
-    buildThreadIndex() {
+    buildForumIndex() {
 
-        if( this._criterion.hasOwnProperty('threadid') ) {
+        if( this._criterion.hasOwnProperty('forumid') ) {
 
-            this._parameters['IndexName'] = "ThreadIndex";
-            this._parameters['KeyConditionExpression'] = "ThreadId = :searchstring";
+            this._parameters['IndexName'] = "ForumIndex";
+            this._parameters['KeyConditionExpression'] = "ForumId = :searchstring";
             this._parameters['ExpressionAttributeValues'] = {
-                ":searchstring" : this._criterion.threadid
+                ":searchstring" : this._criterion.forumid
             };
         }
 
@@ -170,11 +170,11 @@ module.exports = class ThreadQueryBuilder {
      */
     buildPagination() {
 
-        if ( this._criterion.hasOwnProperty('threadid') && 
+        if ( this._criterion.hasOwnProperty('forumid') && 
         	this._criterion.hasOwnProperty('createddatetime') ) 
         {
             this._parameters['ExclusiveStartKey'] = {
-                ThreadId: this._criterion.threadid,
+                ForumId: this._criterion.threadid,
                 DateTime: this._criterion.createddatetime
             }
         }
