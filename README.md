@@ -3,7 +3,7 @@
 A microservice template for a Q&A solution such as comments functionality or discussion forum deployed using 
 the [Serverless Framework](http://serverless.com).
 
-A simple but robust solution that can be built upon. Includes common functionality including pagination and global secondary indexes for retrieiving by user, thread or unique key. It is loosely inspired by the [AWS Example Forum](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SampleData.CreateTables.html) and designed as part of a distributed solution.
+A simple but robust solution that can be built upon. Includes common functionality including pagination and global secondary indexes for retrieiving by user, thread or unique key. It is loosely inspired by the [AWS Example Forum](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SampleData.CreateTables.html) and designed to be implemented as part of a distributed system.
 
 ## Technology Stack
 1. [AWS Lambda](https://aws.amazon.com/lambda/)
