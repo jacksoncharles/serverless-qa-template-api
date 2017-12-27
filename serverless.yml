@@ -129,14 +129,14 @@ resources:
             AttributeName: "UserId"
             AttributeType: "S"
           -
-            AttributeName: "ThreadDateTime"
+            AttributeName: "CreatedDateTime"
             AttributeType: "S"
         KeySchema:
           -
             AttributeName: "Id"
             KeyType: "HASH"
           -
-            AttributeName: "ThreadDateTime"
+            AttributeName: "CreatedDateTime"
             KeyType: "RANGE"
         GlobalSecondaryIndexes:
           -
@@ -146,7 +146,7 @@ resources:
                 AttributeName: "ForumId"
                 KeyType: HASH
               -
-                AttributeName: "ThreadDateTime"
+                AttributeName: "CreatedDateTime"
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
@@ -160,7 +160,7 @@ resources:
                 AttributeName: "UserId"
                 KeyType: HASH
               -
-                AttributeName: "ThreadDateTime"
+                AttributeName: "CreatedDateTime"
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
