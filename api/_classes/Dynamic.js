@@ -78,19 +78,14 @@ module.exports = class Dynamic {
 	        }
 	    }
 
-	    console.log('=== parameters ===', parameters );
-
 		return new Promise( function( resolve, reject ) {
 
 	        /** Run a dynamodb get request passing-in our parameters  */
 	        return dynamodb.get( parameters, function( error, data ) {
 
-				console.log('=== error is ===', error );
-
 	            /** Handle potential dynamodb errors */
 	            if ( error ) return reject( error );
 
-	            console.log('=== got this far ===', data );
 	            /** @type {Object} Create a new instance of self and populate with the data */
 	            let modelInstance = self.model( data.Item );
 
@@ -153,10 +148,12 @@ module.exports = class Dynamic {
 	 */
 	static destroy( id ) {
 
+		var self = this;
+
 	    /** @type {Object} Holds the parameters for the get request */
 	    const parameters = {
 
-	        TableName : self.constructor.table(),
+	        TableName : self.table(),
 	        Key : {
 	            Id : id
 	        }
