@@ -18,7 +18,6 @@ module.exports.threadUpdate = (event, context, callback) => {
     try {
 
         let parameters = JSON.parse( event.body );
-
         let thread = new Thread( parameters );
 
         thread
@@ -39,7 +38,6 @@ module.exports.threadUpdate = (event, context, callback) => {
                 statusCode: 500,
                 body: JSON.stringify( { message: error.message } )
             });
-
         });
 
     } catch( error ) {

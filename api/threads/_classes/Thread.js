@@ -20,6 +20,17 @@ module.exports = class Thread extends Dynamic {
     }
 
     /**
+     * Return a string containing the name of the table in perment storage
+     * for the model.
+     *
+     * @return {String} - Name of the string
+     */
+    static table() {
+
+        return 'Thread';
+    }
+
+    /**
      * Return a new instance of this
      * 
      * @param  {Object} parameters - Properties to be assigned to the newly created object

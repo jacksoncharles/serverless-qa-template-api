@@ -98,7 +98,7 @@ module.exports = class ThreadQueryBuilder {
 
     		if( this._criterion.hasOwnProperty( 'forumid' ) ) {
 
-    			if ( validator.isAlphanumeric( this._criterion.threadid ) == false ) {
+    			if ( validator.isAlphanumeric( this._criterion.forumid ) == false ) {
 
     				this._errors.push( { "message": "Your forumid parameter must be an alphanumeric string" } );
     			}
@@ -174,7 +174,7 @@ module.exports = class ThreadQueryBuilder {
         	this._criterion.hasOwnProperty('createddatetime') ) 
         {
             this._parameters['ExclusiveStartKey'] = {
-                ForumId: this._criterion.threadid,
+                ForumId: this._criterion.forumid,
                 DateTime: this._criterion.createddatetime
             }
         }

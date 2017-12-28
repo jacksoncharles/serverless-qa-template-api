@@ -29,12 +29,10 @@ module.exports.threadCreate = (event, context, callback) => {
         .save()
         .then( ( data ) => {
 
-            const response = {
+            return callback( null, {
                 statusCode: 200,
                 body: JSON.stringify( data )
-            }
-
-            return callback( null, response );
+            });
         })
         .catch( function( error ) {
 
@@ -42,7 +40,6 @@ module.exports.threadCreate = (event, context, callback) => {
                 statusCode: 500,
                 body: JSON.stringify( { message: error.message } )
             });
-
         });
 
     } catch( error ) {
@@ -62,7 +59,6 @@ module.exports.threadCreate = (event, context, callback) => {
                 statusCode: 500,
                 body: JSON.stringify( error )
             });
-
         } 
         else {
 
