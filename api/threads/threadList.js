@@ -26,12 +26,14 @@ module.exports.threadList = (event, context, callback) => {
 
     try {
 
+        console.log('=== gotcha ===');
         Query
-        .validates()
+        .validate()
         .buildForumIndex()
         .buildUserIndex()
         .buildPagination();
 
+        console.log('=== Query.parameters ===', Query.parameters );
         /** @type {model} Contains a list of items and optional pagination data  */
         Thread.list( Query.parameters )
         .then( ( threads ) => {

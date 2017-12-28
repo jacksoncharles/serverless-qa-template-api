@@ -83,7 +83,7 @@ module.exports = class ThreadQueryBuilder {
 	 * 
 	 * @return {boolean} 
 	 */
-	validates() {
+	validate() {
 
 		this._errors = []; // Empty the errors array before running the validation logic
 

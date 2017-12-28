@@ -83,7 +83,7 @@ module.exports = class ReplyQueryBuilder {
 	 * 
 	 * @return {boolean} 
 	 */
-	validates() {
+	validate() {
 
 		this._errors = []; // Reset the errors array before running the validation logic
 

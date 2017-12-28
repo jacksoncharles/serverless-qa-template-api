@@ -29,7 +29,7 @@ module.exports.replyList = (event, context, callback) => {
     try {
 
         Query
-        .validates()
+        .validate()
         .buildThreadIndex()
         .buildUserIndex()
         .buildPagination();

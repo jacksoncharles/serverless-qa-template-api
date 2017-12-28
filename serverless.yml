@@ -30,7 +30,7 @@ functions:
     description: Submit thread.
     events:
       - http: 
-          path: replies
+          path: threads
           method: post
           cors: true
 
@@ -40,7 +40,7 @@ functions:
     description: Retrieve a paginated list of threads.
     events:
       - http:
-          path: replies
+          path: threads
           method: get
           cors: true
 
