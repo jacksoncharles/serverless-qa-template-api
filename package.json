@@ -1,7 +1,7 @@
 {
-  "name": "post-api",
+  "name": "serverless-qa-template-api",
   "version": "1.0.0",
-  "description": "",
+  "description": "Big data, serverless Q&A template API. Written in NodeJS and deployed to AWS. Designed to be implemented as part of a distributed service. Exploits Lambda, API Gateway, Cloudwatch & Dynamodb.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -12,5 +12,8 @@
   "dependencies": {
     "bluebird": "^3.5.1",
     "lint": "^1.1.2"
+  },
+  "devDependencies": {
+    "eslint": "^4.14.0"
   }
 }
