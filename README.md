@@ -1,6 +1,6 @@
-# Serverless Q&A template
+# Serverless Q&A Template API
 
-A big data Q&A serverless template that can be easily built upon and used for everyday services such as discussion forums, comments and surveys. Deployed to AWS using the [Serverless Framework](http://serverless.com).
+A big data Q&A serverless template API that can be easily built upon and used for everyday services such as discussion forums, comments and surveys. Deployed to AWS using the [Serverless Framework](http://serverless.com).
 
 Includes pagination and global secondary indexes for retrieiving by user, thread or unique key and is multi-tenancy ready. Loosely inspired and modeled upon the [AWS Example Forum](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SampleData.CreateTables.html) and designed to be implemented as part of a distributed system.
 
@@ -64,7 +64,7 @@ not remove DynamoDb tables; They must be deleted manually.
 ## Lambda Functions and EndPoints
 Will create 10 Lambda functions accessible via [API Gateway](https://aws.amazon.com/api-gateway/) configured endpoints.
 
-NAME | LAMBDA | URL | VERB | DESCRIPTION
+NAME | LAMBDA | GATEWAY URL | VERB | DESCRIPTION
 ---- | ------ | --- | ---- | -----------
 CREATE | threadCreate | /threads | POST | Create a new item in permanent storage.
 LIST | threadList | /threads | GET | Retrieve a paginated listing from permanent storage.
