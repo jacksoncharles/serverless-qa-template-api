@@ -1,6 +1,6 @@
 # AWS Serverless Q&A Template Solution
 
-A template Q&A solution that can be used for common functionality such as comments, discussion forums or surveys. Deployed to AWS using the [Serverless Framework](http://serverless.com).
+A template Q&A solution that can be used for everyday services such as discussion forums, comments and surveys. Deployed to AWS using the [Serverless Framework](http://serverless.com).
 
 Includes pagination and global secondary indexes for retrieiving by user, thread or unique key and is multi-tenancy compatible. It is loosely inspired by the [AWS Example Forum](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SampleData.CreateTables.html) and designed to be implemented as part of a distributed system.
 
@@ -77,4 +77,4 @@ DELETE | replyDelete | /replies/:id | DELETE | Remove an item from permanent sto
 
 
 ## Issues
-Please report any feedback on the [Issue Tracker](https://github.com/jacksoncharles/forum-microservice/issues).
+Please report any feedback on the [Issue Tracker](https://github.com/jacksoncharles/aws-serverless-qa-template-solution/issues).
