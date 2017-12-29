@@ -2,7 +2,7 @@
 
 A big data template Q&A engine that can be built upon and used for everyday services such as discussion forums, comments and surveys. Deployed to AWS using the [Serverless Framework](http://serverless.com).
 
-Includes pagination and global secondary indexes for retrieiving by user, thread or unique key and is multi-tenancy compatible. It is loosely inspired by the [AWS Example Forum](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SampleData.CreateTables.html) and designed to be implemented as part of a distributed system.
+Includes pagination and global secondary indexes for retrieiving by user, thread or unique key and is multi-tenancy ready. It is loosely inspired by the [AWS Example Forum](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SampleData.CreateTables.html) and designed to be implemented as part of a distributed system.
 
 ## Technology Stack
 1. [AWS Lambda](https://aws.amazon.com/lambda/)
