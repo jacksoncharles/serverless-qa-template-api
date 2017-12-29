@@ -1,8 +1,8 @@
 # Serverless Q&A template
 
-A big data Q&A template service that can be easily built upon and used for everyday services such as discussion forums, comments and surveys. Deployed to AWS using the [Serverless Framework](http://serverless.com).
+A big data Q&A serverless template that can be easily built upon and used for everyday services such as discussion forums, comments and surveys. Deployed to AWS using the [Serverless Framework](http://serverless.com).
 
-Includes pagination and global secondary indexes for retrieiving by user, thread or unique key and is multi-tenancy ready. It is loosely inspired by the [AWS Example Forum](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SampleData.CreateTables.html) and designed to be implemented as part of a distributed system.
+Includes pagination and global secondary indexes for retrieiving by user, thread or unique key and is multi-tenancy ready. Loosely inspired and modelled upon the [AWS Example Forum](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SampleData.CreateTables.html) and designed to be implemented as part of a distributed system.
 
 ## Technology Stack
 1. [AWS Lambda](https://aws.amazon.com/lambda/)
@@ -13,7 +13,7 @@ Includes pagination and global secondary indexes for retrieiving by user, thread
 5. [NodeJs](https://nodejs.org/)
 
 ## Installation & Deployment 
-Deploying the forum microservice will provision and create the following resources.
+Deploying the Q&A service will provision and create the following resources.
 
 1. API Gateway entitled qa-service with 10 endpoints.
 2. 10 * Lambda functions with associated Cloud Watch logs.
@@ -33,10 +33,10 @@ Secondly, install the [Serverless Framework](http://serverless.com) dependencies
     npm install
 ```
 
-Next, install your microservice API dependencies.
+Next, install your Q&A service dependencies.
 
 ```
-    npm buildapi
+    npm run-script buildapi
 ```
 
 Lasty, deploy your microservice API.
@@ -79,4 +79,4 @@ DELETE | replyDelete | /replies/:id | DELETE | Remove an item from permanent sto
 
 
 ## Issues
-Please report any feedback on the [Issue Tracker](https://github.com/jacksoncharles/aws-serverless-qa-template-solution/issues).
+Please report any feedback on the [Issue Tracker](https://github.com/jacksoncharles/serverless-qa-template/issues).
