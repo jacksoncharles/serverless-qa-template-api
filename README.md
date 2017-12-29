@@ -39,7 +39,7 @@ Next, install your Q&A service dependencies.
     npm run-script buildapi
 ```
 
-Lasty, deploy your microservice API.
+Lasty, deploy your Q&A service.
 
 ```
     sls deploy
