@@ -1,4 +1,4 @@
-# AWS Serverless Q&A Template
+# Big data, serverless Q&A template service deployed AWS
 
 A big data Q&A template service that can be easily built upon and used for everyday services such as discussion forums, comments and surveys. Deployed to AWS using the [Serverless Framework](http://serverless.com).
 
