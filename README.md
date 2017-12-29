@@ -1,9 +1,8 @@
-# Q&A Microservice Template
+# AWS Serverless Q&A Template Solution
 
-A microservice template for a Q&A solution such as comments functionality or discussion forum deployed using 
-the [Serverless Framework](http://serverless.com).
+A template Q&A solution that can be used for common functionality such as comments, discussion forums or surveys. Deployed to AWS using the [Serverless Framework](http://serverless.com).
 
-A simple and robust solution that can be built upon. Includes pagination and global secondary indexes for retrieiving by user, thread or unique key and is multi-tenancy compatible. It is loosely inspired by the [AWS Example Forum](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SampleData.CreateTables.html) and designed to be implemented as part of a distributed system.
+Includes pagination and global secondary indexes for retrieiving by user, thread or unique key and is multi-tenancy compatible. It is loosely inspired by the [AWS Example Forum](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SampleData.CreateTables.html) and designed to be implemented as part of a distributed system.
 
 ## Technology Stack
 1. [AWS Lambda](https://aws.amazon.com/lambda/)
