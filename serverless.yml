@@ -3,7 +3,6 @@ service: forum-service
 provider:
   name: aws
   runtime: nodejs6.10
-  profile: jacksoncharles
   stage: prod
   region: eu-west-1
 
@@ -136,9 +135,6 @@ resources:
           -
             AttributeName: "Id"
             KeyType: "HASH"
-          -
-            AttributeName: "CreatedDateTime"
-            KeyType: "RANGE"
         GlobalSecondaryIndexes:
           -
             IndexName: ForumIndex

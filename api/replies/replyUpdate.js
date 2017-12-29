@@ -17,8 +17,13 @@ module.exports.replyUpdate = (event, context, callback) => {
 
     try {
 
+        // Get the parameters passed in the body of the request
         let parameters = JSON.parse( event.body );
 
+        // Grab the value of hash key "id" passed in the route
+        parameters['Id'] = event.pathParameters.id;
+
+        // Create a new instance of the reply object passing in our parameters
         let reply = new Reply( parameters );
 
         reply

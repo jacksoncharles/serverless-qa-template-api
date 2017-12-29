@@ -17,7 +17,13 @@ module.exports.threadUpdate = (event, context, callback) => {
 
     try {
 
+        // Get the parameters passed in the body of the request
         let parameters = JSON.parse( event.body );
+
+        // Grab the value of hash key "id" passed in the route
+        parameters['Id'] = event.pathParameters.id;
+
+        // Create a new instance of the thread object passing in our parameters
         let thread = new Thread( parameters );
 
         thread

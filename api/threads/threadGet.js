@@ -25,7 +25,7 @@ module.exports.threadGet = ( event, context, callback ) => {
     })
     .catch( function( error ) {
 
-        console.log('<<<Error>>>', error );
+        console.log('<<<Unknown Error>>>', error );
 
         callback(null, {
             statusCode: 500,

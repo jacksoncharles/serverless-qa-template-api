@@ -37,6 +37,8 @@ module.exports.replyCreate = (event, context, callback) => {
         })
         .catch( function( error ) {
 
+            console.log('<<<Unknown Error>>>', error );
+            
             callback(null, {
                 statusCode: 500,
                 body: JSON.stringify( { message: error.message } )

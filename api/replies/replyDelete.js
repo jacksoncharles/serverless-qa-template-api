@@ -1,12 +1,8 @@
 'use strict';
 
-var Errors = require("./../../_classes/Errors");
+var Errors = require("./../_classes/Errors");
 var ValidationError = Errors.ValidationError;
-
-
-var Reply = require("./_models/Reply");
-
-var Dynamodb = require("./../_classes/DynamodbService");
+var Reply = require("./_classes/Reply");
 
 /**
  * Handler for the lambda function.
@@ -31,7 +27,7 @@ module.exports.replyDelete = (event, context, callback) => {
     })
     .catch( function( error ) {
 
-        console.log('<<<Error>>>', error );
+        console.log('<<<Unknown Error>>>', error );
 
         callback(null, {
             statusCode: 500,

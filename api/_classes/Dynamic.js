@@ -77,7 +77,8 @@ module.exports = class Dynamic {
 	            Id : id
 	        }
 	    }
-
+	    console.log( '=== parameters ===', parameters );
+	    
 		return new Promise( function( resolve, reject ) {
 
 	        /** Run a dynamodb get request passing-in our parameters  */
