@@ -1,4 +1,4 @@
-service: forum-service
+service: qa-service
 
 provider:
   name: aws
@@ -130,6 +130,9 @@ resources:
             AttributeType: "S"
           -
             AttributeName: "CreatedDateTime"
+            AttributeType: "S"
+          -
+            AttributeName: "UpdatedDateTime"
             AttributeType: "S"
         KeySchema:
           -

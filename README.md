@@ -15,7 +15,7 @@ Includes pagination and global secondary indexes for retrieiving by user, thread
 ## Installation & Deployment 
 Deploying the forum microservice will provision and create the following resources.
 
-1. API Gateway entitled forum-microservice with 10 endpoints.
+1. API Gateway entitled qa-service with 10 endpoints.
 2. 10 * Lambda functions with associated Cloud Watch logs.
 3. 2 * DynamoDB tables called Thread and Reply.
 
