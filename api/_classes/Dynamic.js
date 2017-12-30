@@ -9,7 +9,7 @@ var ValidationError = Errors.ValidationError;
 var NotFoundError = Errors.NotFoundError;
 
 /**
- * Wrapper for DynamoDb with basic CRUD functionality and a validation method
+ * Wrapper for DynamoDb with basic CRUD functionality.
  * 
  * @type {Class}
  */
@@ -77,7 +77,6 @@ module.exports = class Dynamic {
 	            Id : id
 	        }
 	    }
-	    console.log( '=== parameters ===', parameters );
 	    
 		return new Promise( function( resolve, reject ) {
 

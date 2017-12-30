@@ -89,34 +89,35 @@ module.exports = class ReplyQueryBuilder {
 
         if( this._criterion !== null && typeof this._criterion === 'object' ) {
 
-    		if( this._criterion.hasOwnProperty( 'threadid' ) == false &&
-    			this._criterion.hasOwnProperty( 'userid' ) == false
-    		) {
+            if( this._criterion.hasOwnProperty( 'threadid' ) == false &&
+                this._criterion.hasOwnProperty( 'userid' ) == false
 
-    			this._errors.push( { "message": "You must provide a threadid or userid parameter" } );
-    		}
+            ) {
 
-    		if( this._criterion.hasOwnProperty( 'threadid' ) ) {
+                this._errors.push( { "message": "You must provide a threadid or userid parameter" } );
+            }
 
-    			if ( validator.isAlphanumeric( this._criterion.threadid ) == false ) {
+            if( this._criterion.hasOwnProperty( 'threadid' ) ) {
 
-    				this._errors.push( { "message": "Your threadid parameter must be an alphanumeric string" } );
-    			}
-    		}
+                if ( validator.isAlphanumeric( this._criterion.threadid ) == false ) {
 
-    		if( this._criterion.hasOwnProperty('userid') ) {
+                    this._errors.push( { "message": "Your threadid parameter must be an alphanumeric string" } );
+                }
+            }
 
-    			if ( validator.isNumeric( this._criterion.userid ) == false ) {
+            if( this._criterion.hasOwnProperty('userid') ) {
 
-    				this._errors.push( { "message": "Your userid parameter must be numeric" } );
-    			}
-    		}
+                if ( validator.isNumeric( this._criterion.userid ) == false ) {
+
+                    this._errors.push( { "message": "Your userid parameter must be numeric" } );
+                }
+            }
         }
         else {
 
             this._errors.push( { "message" : "You must supply a threadid or userid" } );
         }
-		    
+
 		if( this._errors.length ) {
 
             throw new ValidationError( JSON.stringify( this._errors ) );
@@ -171,7 +172,7 @@ module.exports = class ReplyQueryBuilder {
     buildPagination() {
 
         if ( this._criterion.hasOwnProperty('threadid') && 
-        	this._criterion.hasOwnProperty('createddatetime') ) 
+            this._criterion.hasOwnProperty('createddatetime') ) 
         {
             this._parameters['ExclusiveStartKey'] = {
                 ThreadId: this._criterion.threadid,

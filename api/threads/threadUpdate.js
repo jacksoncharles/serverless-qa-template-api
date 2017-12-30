@@ -1,8 +1,10 @@
 'use strict';
 
 var Thread = require("./_classes/Thread");
+
 var Errors = require("./../_classes/Errors");
 var ValidationError = Errors.ValidationError;
+var DynamodbError = Errors.DynamodbError;
 
 /**
  * Handler for the lambda function.

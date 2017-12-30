@@ -2,8 +2,10 @@
 const uuidv1 = require('uuid/v1');
 
 var Reply = require("./_classes/Reply");
+
 var Errors = require("./../_classes/Errors");
 var ValidationError = Errors.ValidationError;
+var DynamodbError = Errors.DynamodbError;
 
 /**
  * Handler for the lambda function.

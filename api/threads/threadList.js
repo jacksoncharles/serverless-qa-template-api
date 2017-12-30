@@ -1,7 +1,9 @@
 'use strict';
 
 var Thread = require("./_classes/Thread");
+
 var ThreadQueryBuilder = require("./_classes/ThreadQueryBuilder");
+
 var Errors = require("./../_classes/Errors");
 var DynamodbError = Errors.DynamodbError;
 var ValidationError = Errors.ValidationError;
@@ -59,6 +61,15 @@ module.exports.threadList = (event, context, callback) => {
             callback(null, {
                 statusCode: 422,
                 body: error.message
+            });
+
+        } else if( error instanceof DynamodbError ) {
+
+            console.log('<<<DynamoDb Error>>>', error );
+
+            callback(null, {
+                statusCode: 500,
+                body: JSON.stringify( error )
             });
 
         } else {

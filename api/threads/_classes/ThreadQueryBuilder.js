@@ -89,34 +89,34 @@ module.exports = class ThreadQueryBuilder {
 
         if( this._criterion !== null && typeof this._criterion === 'object' ) {
 
-    		if( this._criterion.hasOwnProperty( 'forumid' ) == false &&
-    			this._criterion.hasOwnProperty( 'userid' ) == false
-    		) {
+            if( this._criterion.hasOwnProperty( 'forumid' ) == false &&
+                this._criterion.hasOwnProperty( 'userid' ) == false
+            ) {
 
-    			this._errors.push( { "message": "You must provide a forumid or userid parameter" } );
-    		}
+                this._errors.push( { "message": "You must provide a forumid or userid parameter" } );
+            }
 
-    		if( this._criterion.hasOwnProperty( 'forumid' ) ) {
+            if( this._criterion.hasOwnProperty( 'forumid' ) ) {
 
-    			if ( validator.isAlphanumeric( this._criterion.forumid ) == false ) {
+                if ( validator.isAlphanumeric( this._criterion.forumid ) == false ) {
 
-    				this._errors.push( { "message": "Your forumid parameter must be an alphanumeric string" } );
-    			}
-    		}
+                    this._errors.push( { "message": "Your forumid parameter must be an alphanumeric string" } );
+                }
+            }
 
-    		if( this._criterion.hasOwnProperty('userid') ) {
+            if( this._criterion.hasOwnProperty('userid') ) {
 
-    			if ( validator.isNumeric( this._criterion.userid ) == false ) {
+                if ( validator.isNumeric( this._criterion.userid ) == false ) {
 
-    				this._errors.push( { "message": "Your userid parameter must be numeric" } );
-    			}
-    		}
+                    this._errors.push( { "message": "Your userid parameter must be numeric" } );
+                }
+            }
         }
         else {
 
             this._errors.push( { "message" : "You must supply a forumid or userid" } );
         }
-		    
+
 		if( this._errors.length ) {
 
             throw new ValidationError( JSON.stringify( this._errors ) );
@@ -171,7 +171,7 @@ module.exports = class ThreadQueryBuilder {
     buildPagination() {
 
         if ( this._criterion.hasOwnProperty('forumid') && 
-        	this._criterion.hasOwnProperty('createddatetime') ) 
+            this._criterion.hasOwnProperty('createddatetime') ) 
         {
             this._parameters['ExclusiveStartKey'] = {
                 ForumId: this._criterion.forumid,
