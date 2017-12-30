@@ -2,74 +2,65 @@
 
 const uuidv1 = require('uuid/v1');
 
-var Thread = require("./_classes/Thread");
+const Thread = require('./_classes/Thread');
 
-var Errors = require("./../_classes/Errors");
-var ValidationError = Errors.ValidationError;
-var DynamodbError = Errors.DynamodbError;
+const Errors = require('./../_classes/Errors');
+
+const { ValidationError } = Errors.ValidationError;
+const { DynamodbError } = Errors.DynamodbError;
 
 /**
  * Handler for the lambda function.
- * 
- * @param  {Object}        event -          AWS Lambda uses this parameter to pass in event data to the handler.
- * @param  {Object}        context -        AWS Lambda uses this parameter to provide your handler the runtime information of the Lambda function that is executing. 
- * @param  {Function}      callback -      Optional parameter used to pass a callback
- * 
+ *
+ * @param  {Object}        event -          AWS Lambda uses this parameter to pass in event
+ *                                          data to the handler.
+ * @param  {Object}        context -        AWS Lambda uses this parameter to provide your
+ *                                          handler the runtime information of the Lambda
+ *                                          function that is executing.
+ * @param  {Function}      callback -       Optional parameter used to pass a callback
+ *
  * @return JSON    JSON encoded response.
  */
 module.exports.threadCreate = (event, context, callback) => {
+  try {
+    const parameters = JSON.parse(event.body);
+    parameters.Id = uuidv1();
 
-    try {
+    const thread = new Thread(parameters);
 
-        let parameters = JSON.parse( event.body );
-        parameters['Id']= uuidv1();
-
-        let thread = new Thread( parameters );
-
-        thread
-        .validate()
-        .save()
-        .then( ( data ) => {
-
-            return callback( null, {
-                statusCode: 200,
-                body: JSON.stringify( data )
-            });
-        })
-        .catch( function( error ) {
-
-            callback(null, {
-                statusCode: 500,
-                body: JSON.stringify( { message: error.message } )
-            });
+    thread
+      .validate()
+      .save()
+      .then(data => callback(null, {
+        statusCode: 200,
+        body: JSON.stringify(data),
+      }))
+      .catch((error) => {
+        callback(null, {
+          statusCode: 500,
+          body: JSON.stringify({ message: error.message }),
         });
+      });
+  } catch (error) {
+    if (error instanceof ValidationError) {
+      callback(null, {
+        statusCode: 422,
+        body: error.message,
+      });
+    } else if (error instanceof DynamodbError) {
+      console.log('<<<Dynamodb Error>>>', error);
 
-    } catch( error ) {
+      callback(null, {
+        statusCode: 500,
+        body: JSON.stringify(error),
+      });
+    } else {
+      console.log('<<<Unknown Error>>>', error);
 
-        if( error instanceof ValidationError ) {
-
-            callback(null, {
-                statusCode: 422,
-                body: error.message
-            });
-        }
-        else if( error instanceof DynamodbError ) {
-
-            console.log('<<<Dynamodb Error>>>', error );
-
-            callback(null, {
-                statusCode: 500,
-                body: JSON.stringify( error )
-            });
-        } 
-        else {
-
-            console.log('<<<Unknown Error>>>', error );
-
-            callback(null, {
-                statusCode: 500,
-                body: JSON.stringify( error )
-            });
-        }
+      callback(null, {
+        statusCode: 500,
+        body: JSON.stringify(error),
+      });
     }
+  }
 };

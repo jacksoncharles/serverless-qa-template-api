@@ -1,80 +1,72 @@
 'use strict';
 
-var Thread = require("./_classes/Thread");
+const Thread = require('./_classes/Thread');
 
-var Errors = require("./../_classes/Errors");
-var ValidationError = Errors.ValidationError;
-var DynamodbError = Errors.DynamodbError;
+const Errors = require('./../_classes/Errors');
+
+const { ValidationError } = Errors.ValidationError;
+const { DynamodbError } = Errors.DynamodbError;
 
 /**
  * Handler for the lambda function.
- * 
- * @param  {Object}        event -          AWS Lambda uses this parameter to pass in event data to the handler.
- * @param  {Object}        context -        AWS Lambda uses this parameter to provide your handler the runtime information of the Lambda function that is executing. 
- * @param  {Function}      callback -      Optional parameter used to pass a callback
- * 
+ *
+ * @param  {Object}        event -          AWS Lambda uses this parameter to pass in event data
+ *                                          to the handler.
+ * @param  {Object}        context -        AWS Lambda uses this parameter to provide your
+ *                                          handler the runtime information of the Lambda
+ *                                          function that is executing.
+ * @param  {Function}      callback -       Optional parameter used to pass a callback
+ *
  * @return JSON    JSON encoded response.
  */
 module.exports.threadUpdate = (event, context, callback) => {
+  try {
+    // Get the parameters passed in the body of the request
+    const parameters = JSON.parse(event.body);
 
-    try {
+    // Grab the value of hash key "id" passed in the route
+    parameters.Id = event.pathParameters.id;
 
-        // Get the parameters passed in the body of the request
-        let parameters = JSON.parse( event.body );
+    // Create a new instance of the thread object passing in our parameters
+    const thread = new Thread(parameters);
 
-        // Grab the value of hash key "id" passed in the route
-        parameters['Id'] = event.pathParameters.id;
+    thread
+      .validate()
+      .save()
+      .then((data) => {
+        const response = {
+          statusCode: 200,
+          body: JSON.stringify(data),
+        };
 
-        // Create a new instance of the thread object passing in our parameters
-        let thread = new Thread( parameters );
-
-        thread
-        .validate()
-        .save()
-        .then( ( data ) => {
-
-            const response = {
-                statusCode: 200,
-                body: JSON.stringify( data )
-            }
-
-            return callback( null, response );
-        })
-        .catch( function( error ) {
-
-            callback(null, {
-                statusCode: 500,
-                body: JSON.stringify( { message: error.message } )
-            });
+        return callback(null, response);
+      })
+      .catch((error) => {
+        callback(null, {
+          statusCode: 500,
+          body: JSON.stringify({ message: error.message }),
         });
+      });
+  } catch (error) {
+    if (error instanceof ValidationError) {
+      callback(null, {
+        statusCode: 422,
+        body: error.message,
+      });
+    } else if (error instanceof DynamodbError) {
+      console.log('<<<Dynamodb Error>>>', error);
 
-    } catch( error ) {
+      callback(null, {
+        statusCode: 500,
+        body: JSON.stringify(error),
+      });
+    } else {
+      console.log('<<<Unknown Error>>>', error);
 
-        if( error instanceof ValidationError ) {
-
-            callback(null, {
-                statusCode: 422,
-                body: error.message
-            });
-        }
-        else if( error instanceof DynamodbError ) {
-
-            console.log('<<<Dynamodb Error>>>', error );
-
-            callback(null, {
-                statusCode: 500,
-                body: JSON.stringify( error )
-            });
-
-        } 
-        else {
-
-            console.log('<<<Unknown Error>>>', error );
-
-            callback(null, {
-                statusCode: 500,
-                body: JSON.stringify( error )
-            });
-        }
+      callback(null, {
+        statusCode: 500,
+        body: JSON.stringify(error),
+      });
     }
+  }
 };
