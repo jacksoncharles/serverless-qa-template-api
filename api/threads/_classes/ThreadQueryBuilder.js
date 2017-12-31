@@ -4,7 +4,7 @@ const validator = require('validator');
 
 const Errors = require('./../../_classes/Errors');
 
-const ValidationError = Errors.ValidationError;
+const { ValidationError } = Errors.ValidationError;
 
 /**
  * Responsible for turning parameters passeed are turned in DynamoDb parameters by building
@@ -15,7 +15,7 @@ const ValidationError = Errors.ValidationError;
 module.exports = class ThreadQueryBuilder {
   constructor(criterion) {
     /** @type {Object} Key/value pairs used to build our DynamoDb parameters. */
-    this._criterion = criterion;
+    this.criterion = criterion;
 
     /**
          * Used to hold the dynamodb query parameters built using values
@@ -25,7 +25,7 @@ module.exports = class ThreadQueryBuilder {
          *
          * @type {object}
          */
-    this._parameters = {
+    this.parameters = {
       TableName: 'Thread',
     };
 
@@ -34,93 +34,94 @@ module.exports = class ThreadQueryBuilder {
          *
          * @type {array}
          */
-    this._errors = [];
+    this.errors = [];
   }
 
   /**
-	 * Getter
-	 *
-	 * @return {object} parameters
-	 */
+   * Getter
+   *
+   * @return {object} parameters
+   */
   get parameters() {
-    return this._parameters;
+    return this.parameters;
   }
 
   /**
-	 * Setter
-	 *
-	 * @return {object} parameters
-	 */
+   * Setter
+   *
+   * @return {object} parameters
+   */
   set parameters(parameters) {
-    this._parameters = parameters;
+    this.parameters = parameters;
   }
 
   /**
-	 * Getter
-	 *
-	 * @return {array} errors
-	 */
+   * Getter
+   *
+   * @return {array} errors
+   */
   get errors() {
-    return this._errors;
+    return this.errors;
   }
 
   /**
-	 * Setter
-	 *
-	 * @return {array} errors
-	 */
+   * Setter
+   *
+   * @return {array} errors
+   */
   set errors(errors) {
-    this._errors = errors;
+    this.errors = errors;
   }
 
   /**
-	 * Validates the parameters passed inside this._criterion object
-	 *
-	 * @return {boolean}
-	 */
+   * Validates the parameters passed inside this.criterion object
+   *
+   * @return {boolean}
+   */
   validate() {
-    this._errors = []; // Empty the errors array before running the validation logic
+    this.errors = []; // Empty the errors array before running the validation logic
 
-    if (this._criterion !== null && typeof this._criterion === 'object') {
-      if (this._criterion.hasOwnProperty('forumid') == false &&
-                this._criterion.hasOwnProperty('userid') == false
+    if (this.criterion !== null && typeof this.criterion === 'object') {
+      if (Object.prototype.hasOwnProperty.call(this.criterion, 'forumid') === false &&
+          Object.prototype.hasOwnProperty.call(this.criterion, 'userid') === false
       ) {
-        this._errors.push({ message: 'You must provide a forumid or userid parameter' });
+        this.errors.push({ message: 'You must provide a forumid or userid parameter' });
       }
 
-      if (this._criterion.hasOwnProperty('forumid')) {
-        if (validator.isAlphanumeric(this._criterion.forumid) == false) {
-          this._errors.push({ message: 'Your forumid parameter must be an alphanumeric string' });
+      if (Object.prototype.hasOwnProperty.call(this.criterion, 'forumid')) {
+        if (validator.isAlphanumeric(this.criterion.forumid) === false) {
+          this.errors.push({ message: 'Your forumid parameter must be an alphanumeric string' });
         }
       }
 
-      if (this._criterion.hasOwnProperty('userid')) {
-        if (validator.isNumeric(this._criterion.userid) == false) {
-          this._errors.push({ message: 'Your userid parameter must be numeric' });
+      if (Object.prototype.hasOwnProperty.call(this.criterion, 'userid')) {
+        if (validator.isNumeric(this.criterion.userid) === false) {
+          this.errors.push({ message: 'Your userid parameter must be numeric' });
         }
       }
     } else {
-      this._errors.push({ message: 'You must supply a forumid or userid' });
+      this.errors.push({ message: 'You must supply a forumid or userid' });
     }
 
-    if (this._errors.length) {
-      throw new ValidationError(JSON.stringify(this._errors));
+    if (this.errors.length) {
+      throw new ValidationError(JSON.stringify(this.errors));
     }
 
     return this;
   }
 
   /**
-     * If "forumid" has been passed inside this.event this method will build upon this.parameters object
+     * If "forumid" has been passed inside this.event this method will build upon
+     * this.parameters object.
      *
      * @return this
      */
   buildForumIndex() {
-    if (this._criterion.hasOwnProperty('forumid')) {
-      this._parameters.IndexName = 'ForumIndex';
-      this._parameters.KeyConditionExpression = 'ForumId = :searchstring';
-      this._parameters.ExpressionAttributeValues = {
-        ':searchstring': this._criterion.forumid,
+    if (Object.prototype.hasOwnProperty.call(this.criterion, 'forumid')) {
+      this.parameters.IndexName = 'ForumIndex';
+      this.parameters.KeyConditionExpression = 'ForumId = :searchstring';
+      this.parameters.ExpressionAttributeValues = {
+        ':searchstring': this.criterion.forumid,
       };
     }
 
@@ -128,16 +129,17 @@ module.exports = class ThreadQueryBuilder {
   }
 
   /**
-      * If "userid" has been passed inside this.event this method will build upon this.parameters object
-      *
-      * @return this
-      */
+   * If "userid" has been passed inside this.event this method will build upon
+   * this.parameters object.
+   *
+   * @return this
+   */
   buildUserIndex() {
-    if (this._criterion.hasOwnProperty('userid')) {
-      this._parameters.IndexName = 'UserIndex';
-      this._parameters.KeyConditionExpression = 'UserId = :searchstring';
-      this._parameters.ExpressionAttributeValues = {
-        ':searchstring': this._criterion.userid,
+    if (Object.prototype.hasOwnProperty.call(this.criterion, 'userid')) {
+      this.parameters.IndexName = 'UserIndex';
+      this.parameters.KeyConditionExpression = 'UserId = :searchstring';
+      this.parameters.ExpressionAttributeValues = {
+        ':searchstring': this.criterion.userid,
       };
     }
 
@@ -145,21 +147,23 @@ module.exports = class ThreadQueryBuilder {
   }
 
   /**
-	 * If pagination parameters have been passed inside this.event this method will build upon this.parameters object
-     *
-     * @return this
-     */
+   * If pagination parameters have been passed inside this.event this method
+   * will build upon this.parameters object.
+   *
+   * @return this
+   */
   buildPagination() {
-    if (this._criterion.hasOwnProperty('forumid') &&
-            this._criterion.hasOwnProperty('createddatetime')) {
-      this._parameters.ExclusiveStartKey = {
-        ForumId: this._criterion.forumid,
-        DateTime: this._criterion.createddatetime,
+    if (Object.prototype.hasOwnProperty.call(this.criterion, 'forumid') &&
+      Object.prototype.hasOwnProperty.call(this.criterion, 'createddatetime')
+    ) {
+      this.parameters.ExclusiveStartKey = {
+        ForumId: this.criterion.forumid,
+        DateTime: this.criterion.createddatetime,
       };
     }
 
-    if (this._criterion.hasOwnProperty('limit')) {
-      this._parameters.Limit = this._criterion.limit;
+    if (Object.prototype.hasOwnProperty.call(this.criterion, 'limit')) {
+      this.parameters.Limit = this.criterion.limit;
     }
 
     return this;
