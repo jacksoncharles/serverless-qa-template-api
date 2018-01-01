@@ -4,7 +4,7 @@ const Thread = require('./_classes/Thread');
 
 const Errors = require('./../_classes/Errors');
 
-const { DynamodbError } = Errors.DynamodbError;
+const DynamodbError = Errors.DynamodbError;
 
 /**
  * Handler for the lambda function.

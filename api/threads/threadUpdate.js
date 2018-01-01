@@ -4,8 +4,8 @@ const Thread = require('./_classes/Thread');
 
 const Errors = require('./../_classes/Errors');
 
-const { ValidationError } = Errors.ValidationError;
-const { DynamodbError } = Errors.DynamodbError;
+const ValidationError = Errors.ValidationError;
+const DynamodbError = Errors.DynamodbError;
 
 /**
  * Handler for the lambda function.
@@ -48,6 +48,7 @@ module.exports.threadUpdate = (event, context, callback) => {
         });
       });
   } catch (error) {
+
     if (error instanceof ValidationError) {
       callback(null, {
         statusCode: 422,

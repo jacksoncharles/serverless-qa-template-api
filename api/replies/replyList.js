@@ -5,9 +5,8 @@ const Reply = require('./_classes/Reply');
 const ReplyQueryBuilder = require('./_classes/ReplyQueryBuilder');
 
 const Errors = require('./../_classes/Errors');
-
-const { DynamodbError } = Errors.DynamodbError;
-const { ValidationError } = Errors.ValidationError;
+const DynamodbError = Errors.DynamodbError;
+const ValidationError = Errors.ValidationError;
 
 /**
  * Handler for the lambda function.
@@ -53,6 +52,7 @@ module.exports.replyList = (event, context, callback) => {
         });
       });
   } catch (error) { // Catch any errors thrown by the ReplyQueryBuilder class
+    console.log('<<<ValidationError REDEFINED>>>', ValidationError);
     if (error instanceof ValidationError) {
       callback(null, {
         statusCode: 422,

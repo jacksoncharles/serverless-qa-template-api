@@ -4,7 +4,7 @@ const validator = require('validator');
 
 const Errors = require('./../../_classes/Errors');
 
-const { ValidationError } = Errors.ValidationError;
+const ValidationError = Errors.ValidationError;
 
 /**
  * Responsible for turning parameters passeed are turned in DynamoDb parameters by building
@@ -25,7 +25,7 @@ module.exports = class ReplyQueryBuilder {
      *
      * @type {object}
      */
-    this.parameters = {
+    this.params = {
       TableName: 'Reply',
     };
 
@@ -34,7 +34,7 @@ module.exports = class ReplyQueryBuilder {
      *
      * @type {array}
      */
-    this.errors = [];
+    this.failures = [];
   }
 
   /**
@@ -43,7 +43,7 @@ module.exports = class ReplyQueryBuilder {
    * @return {object} parameters
    */
   get parameters() {
-    return this.parameters;
+    return this.params;
   }
 
   /**
@@ -51,8 +51,8 @@ module.exports = class ReplyQueryBuilder {
    *
    * @return {object} parameters
    */
-  set parameters(parameters) {
-    this.parameters = parameters;
+  set parameters(params) {
+    this.params = params;
   }
 
   /**
@@ -61,16 +61,16 @@ module.exports = class ReplyQueryBuilder {
    * @return {array} errors
    */
   get errors() {
-    return this.errors;
+    return this.failures;
   }
 
   /**
    * Setter
    *
-   * @return {array} errors
+   * @return {array} failures
    */
-  set errors(errors) {
-    this.errors = errors;
+  set errors(failures) {
+    this.failures = failures;
   }
 
   /**

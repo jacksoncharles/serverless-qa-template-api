@@ -6,7 +6,7 @@ const Dynamic = require('./../../_classes/Dynamic');
 
 const Errors = require('./../../_classes/Errors');
 
-const { ValidationError } = Errors.ValidationError;
+const ValidationError = Errors.ValidationError;
 
 
 /**

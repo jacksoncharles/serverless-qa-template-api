@@ -6,7 +6,7 @@ const Dynamic = require('./../../_classes/Dynamic');
 
 const Errors = require('./../../_classes/Errors');
 
-const { ValidationError } = Errors.ValidationError;
+const ValidationError = Errors.ValidationError;
 
 /**
  * Thread class. Each instance maps to one document in permanent storage and extends the

@@ -6,8 +6,8 @@ const ThreadQueryBuilder = require('./_classes/ThreadQueryBuilder');
 
 const Errors = require('./../_classes/Errors');
 
-const { DynamodbError } = Errors.DynamodbError;
-const { ValidationError } = Errors.ValidationError;
+const DynamodbError = Errors.DynamodbError;
+const ValidationError = Errors.ValidationError;
 
 /**
  * Handler for the lambda function.
