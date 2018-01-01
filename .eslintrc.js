@@ -6,6 +6,7 @@ module.exports = {
   "rules": {
     "strict": "off",
     "no-console": "off",
-    "import/no-unresolved": "off"
+    "import/no-unresolved": "off",
+    "prefer-destructuring": "off"
   }
 }

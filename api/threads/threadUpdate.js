@@ -48,7 +48,6 @@ module.exports.threadUpdate = (event, context, callback) => {
         });
       });
   } catch (error) {
-
     if (error instanceof ValidationError) {
       callback(null, {
         statusCode: 422,
