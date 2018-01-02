@@ -53,13 +53,6 @@ module.exports.replyCreate = (event, context, callback) => {
         statusCode: 422,
         body: error.message,
       });
-    } else if (error instanceof DynamodbError) {
-      console.log('<<<Dynamodb Error>>>', error);
-
-      callback(null, {
-        statusCode: 500,
-        body: JSON.stringify(error),
-      });
     } else {
       console.log('<<<Unknown Error>>>', error);
 

@@ -1,6 +1,10 @@
 'use strict';
 
 const AWS = require('aws-sdk');
+
+/** Set the promise library to the default global */
+AWS.config.setPromisesDependency(null); 
+
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 var Errors = require("./Errors");
@@ -30,34 +34,26 @@ module.exports = class Dynamic {
 
 		var self = this;
 
-		return new Promise( function( resolve, reject ) {
+	    /** @type {Object} Holds the parameters for the get request */
+	    const parameters = {
 
-		    /** @type {Object} Holds the parameters for the get request */
-		    const parameters = {
+	        TableName : self.constructor.table(),
+	        Item : self.properties()
+	    }
 
-		        TableName : self.constructor.table(),
-		        Item : self.properties()
-		    }
+        // Save to permanent storage
+		return dynamodb.put( parameters ).promise().then(
 
-	        // Save to permanent storage
-			return dynamodb.put( parameters, function( error, data ) {
-
-				// Handle DynamoDb errors
-				if( error ) return reject( error );
+			function(data) {
 
 	            /** @type {Object} Create a new instance of self and populate with the data */
-	            let modelInstance = self.constructor.model( parameters.Item );
+	            return self.constructor.model( parameters.Item );
+			},
+			function(error) {
 
-	            /** All successful. Create a valid response */
-	            return resolve( modelInstance );
-	        });
-		})
-        .catch( function( error ) {
-
-        	console.log('<<<DynamodbError>>>', error );
-        	
-        	throw new DynamodbError( error );
-        });
+				console.log('<<<DynamodbError : SAVE >>>', error);
+			}
+		);
 	}
 
 	/**
@@ -78,29 +74,22 @@ module.exports = class Dynamic {
 	        }
 	    }
 	    
-		return new Promise( function( resolve, reject ) {
+        /** Run a dynamodb get request passing-in our parameters  */
+        return dynamodb.get( parameters ).promise().then(
 
-	        /** Run a dynamodb get request passing-in our parameters  */
-	        return dynamodb.get( parameters, function( error, data ) {
-
-	            /** Handle potential dynamodb errors */
-	            if ( error ) return reject( error );
+			// Successful response will be automatically resolve
+			//  the promise using the 'complete' event
+        	function(data) {
 
 	            /** @type {Object} Create a new instance of self and populate with the data */
-	            let modelInstance = self.model( data.Item );
+	            return self.model( data.Item );
+        	},
+        	function(error) {
 
-	            /** All successful. Create a valid response */
-	            return resolve( modelInstance );
-	        });	    
-
-	    })
-        .catch( function( error ) { // Capture a dynamodb rejection
-
-        	console.log('<<<DynamodbError>>>', error );
-        	
-        	throw new DynamodbError( error );
-        });	    
-	}
+        		console.log('<<<DynamodbError : FIND>>>', error);
+        	}
+        );
+   	}
 
 	/**
 	 * Retrieve an array of replies according to the parameters passed
@@ -111,13 +100,12 @@ module.exports = class Dynamic {
 
 		var self = this;
 
-		return new Promise( function( resolve, reject ) {
+        /** Run a dynamodb query passing-in Query.parameters  */
+        return dynamodb.query( parameters ).promise().then(
 
-	        /** Run a dynamodb query passing-in Query.parameters  */
-	        return dynamodb.query( parameters, function( error, data ) {
-
-	            /** Handle potential dynamodb errors */
-	            if ( error ) return reject( error );
+			// Successful response will be automatically resolve
+			//  the promise using the 'complete' event
+        	function(data) {
 
 	            let items = [];
 
@@ -129,16 +117,13 @@ module.exports = class Dynamic {
 	            data['Items'] = items;
 
 	            /** All successful. Create a valid response */
-	            return resolve( data );
-	        });	    
+	            return data;
+        	},
+        	function(error) {
 
-	    })
-        .catch( function( error ) {
-
-        	console.log('<<<DynamodbError>>>', error );
-
-        	throw new DynamodbError( error );
-        });	    
+        		console.log('<<<DynamodbError : LIST>>>', error);
+        	}
+        );
 	}
 
 	/**
@@ -159,24 +144,19 @@ module.exports = class Dynamic {
 	        }
 	    }
 
-		return new Promise( function( resolve, reject ) {
+        /** Run a dynamodb get request passing-in our parameters  */
+        return dynamodb.delete( parameters ).promise().then(
 
-	        /** Run a dynamodb get request passing-in our parameters  */
-	        return dynamodb.delete( parameters, function( error, data ) {
+			// Successful response will be automatically resolve
+			//  the promise using the 'complete' event
+        	function(data) {
 
-	            /** Handle potential dynamodb errors */
-	            if ( error ) return reject( error );
+        		return JSON.stringify( data );
+        	},
+        	function(error) {
 
-	            /** All successful. Create a valid response */
-	            return resolve( JSON.stringify( data ) );
-	        });	    
-
-	    })
-        .catch( function( error ) {
-
-        	console.log('<<<DynamodbError>>>', error );
-        	
-        	throw new DynamodbError( error );
-        });	    		
+        		console.log('<<<DynamodbError : DESTROY>>>', error);
+        	}
+    	);
 	}	
 }

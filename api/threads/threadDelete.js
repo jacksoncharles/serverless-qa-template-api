@@ -29,20 +29,11 @@ module.exports.threadDelete = (event, context, callback) => {
       return callback(null, response);
     })
     .catch((error) => {
-      if (error instanceof DynamodbError) {
-        console.log('<<<DynamoDb Error>>>', error);
-
-        callback(null, {
-          statusCode: 500,
-          body: JSON.stringify(error),
-        });
-      } else {
         console.log('<<<Unknown Error>>>', error);
 
         callback(null, {
           statusCode: 500,
           body: JSON.stringify(error),
         });
-      }
     });
 };
