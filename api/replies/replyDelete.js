@@ -2,8 +2,6 @@
 
 const Reply = require('./_classes/Reply');
 
-const Errors = require('./../_classes/Errors');
-
 /**
  * Handler for the lambda function.
  *

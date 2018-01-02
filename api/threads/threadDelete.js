@@ -25,11 +25,11 @@ module.exports.threadDelete = (event, context, callback) => {
       return callback(null, response);
     })
     .catch((error) => {
-        console.log('<<<Unknown Error>>>', error);
+      console.log('<<<Unknown Error>>>', error);
 
-        callback(null, {
-          statusCode: 500,
-          body: JSON.stringify(error),
-        });
+      callback(null, {
+        statusCode: 500,
+        body: JSON.stringify(error),
+      });
     });
 };
