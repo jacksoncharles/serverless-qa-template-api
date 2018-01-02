@@ -4,8 +4,6 @@ const Reply = require('./_classes/Reply');
 
 const Errors = require('./../_classes/Errors');
 
-const DynamodbError = Errors.DynamodbError;
-
 /**
  * Handler for the lambda function.
  *

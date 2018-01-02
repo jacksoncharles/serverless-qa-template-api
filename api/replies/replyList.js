@@ -6,7 +6,6 @@ const ReplyQueryBuilder = require('./_classes/ReplyQueryBuilder');
 
 const Errors = require('./../_classes/Errors');
 
-const DynamodbError = Errors.DynamodbError;
 const ValidationError = Errors.ValidationError;
 
 /**

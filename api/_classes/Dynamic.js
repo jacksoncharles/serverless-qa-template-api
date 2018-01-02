@@ -8,7 +8,6 @@ AWS.config.setPromisesDependency(null);
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 var Errors = require("./Errors");
-var DynamodbError = Errors.DynamodbError;
 var ValidationError = Errors.ValidationError;
 var NotFoundError = Errors.NotFoundError;
 
